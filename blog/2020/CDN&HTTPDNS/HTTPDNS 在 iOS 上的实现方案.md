@@ -81,27 +81,24 @@ NSString *host = "a.test.com";
 
 ```json
 {
-	"service" : "深圳移动",
-	"enable" : 1,
-	"domainlist" : [
-				{
-				"domain": "a.test.com",
-          		  "ips" :  [
-              				"222.66.22.111",
-							"222.66.22.102"
-           					]
-				},
-				{
-				"domain": "b.test.com",
-          		  "ips" :  [
-              				 "202.29.13.214"
-           					]
-				}
-
-	]
+    "service" : "深圳移动",
+    "enable" : 1,
+    "domainlist" : [
+                {
+                "domain": "a.test.com",
+                "ips" :  [
+                        "222.66.22.111",
+                        "222.66.22.102"
+                        ]
+                },
+                {
+                "domain": "b.test.com",
+                "ips" :  [
+                        "202.29.13.214"
+                        ]
+                }
+    
 }
-
-
 
 ```
 
