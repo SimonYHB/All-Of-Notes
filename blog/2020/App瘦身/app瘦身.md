@@ -16,7 +16,7 @@
 
 ## App Thinning
 
-格来说App Thinning不会让安装包变小，但用户安装应用时，苹果会根据用户的机型自动选择合适的资源和对应CPU架构的二进制执行文件（也就是说用户本地可执行文件不会同时存在armv7和arm64），安装后空间占用更小
+严格来说App Thinning不会让安装包变小，但用户安装应用时，苹果会根据用户的机型自动选择合适的资源和对应CPU架构的二进制执行文件（也就是说用户本地可执行文件不会同时存在armv7和arm64），安装后空间占用更小
 
 ## 资源瘦身
 
@@ -26,13 +26,17 @@
 
 ### 图片等资源压缩
 
-建议使用无损压缩，例如ImageOptim、compress命令等，否则需要设计接入进行检查。
+建议使用无损压缩，例如 ImageOptim、compress命令等，否则需要设计接入进行检查。
 
 
 
 ### 重复文件
 
+
+
 ### 图片资源放入image.xcassets
+
+
 
 
 
@@ -58,7 +62,7 @@ simian 扫描重复代码
 
 ## 编译选项优化
 
-- Strip Link Product设成YES，WeChatWatch可执行文件减少0.3M
+- Strip Link Product设成YES，WeChatWatch 可执行文件减少0.3M
 - Make Strings Read-Only设为YES，也许是因为微信工程从低版本Xcode升级过来，这个编译选项之前一直为NO，设为YES后可执行文件减少了3M
 - 去掉异常支持，Enable C++ Exceptions和Enable Objective-C Exceptions设为NO，并且Other C Flags添加-fno-exceptions，可执行文件减少了27M，其中__gcc_except_tab段减少了17.3M，__text减少了9.7M，效果特别明显。可以对某些文件单独支持异常，编译选项加上-fexceptions即可。但有个问题，假如ABC三个文件，AC文件支持了异常，B不支持，如果C抛了异常，在模拟器下A还是能捕获异常不至于Crash，但真机下捕获不了（有知道原因可以在下面留言：）。去掉异常后，Appstore后续几个版本Crash率没有明显上升。个人认为关键路径支持异常处理就好，像启动时NSCoder读取setting配置文件得要支持捕获异常，等等
 
