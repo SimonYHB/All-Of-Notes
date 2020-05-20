@@ -14,9 +14,7 @@
 
 
 
-## App Thinning
 
-严格来说App Thinning不会让安装包变小，但用户安装应用时，苹果会根据用户的机型自动选择合适的资源和对应CPU架构的二进制执行文件（也就是说用户本地可执行文件不会同时存在armv7和arm64），安装后空间占用更小
 
 ## 资源瘦身
 
@@ -66,6 +64,38 @@ simian 扫描重复代码
 - Make Strings Read-Only设为YES，也许是因为微信工程从低版本Xcode升级过来，这个编译选项之前一直为NO，设为YES后可执行文件减少了3M
 - 去掉异常支持，Enable C++ Exceptions和Enable Objective-C Exceptions设为NO，并且Other C Flags添加-fno-exceptions，可执行文件减少了27M，其中__gcc_except_tab段减少了17.3M，__text减少了9.7M，效果特别明显。可以对某些文件单独支持异常，编译选项加上-fexceptions即可。但有个问题，假如ABC三个文件，AC文件支持了异常，B不支持，如果C抛了异常，在模拟器下A还是能捕获异常不至于Crash，但真机下捕获不了（有知道原因可以在下面留言：）。去掉异常后，Appstore后续几个版本Crash率没有明显上升。个人认为关键路径支持异常处理就好，像启动时NSCoder读取setting配置文件得要支持捕获异常，等等
 
+
+
+## App Thinning
+
+WWDC2015 发布会上首次介绍了 App Thinning，并在 iOS9 开始应用。严格来说App Thinning不会让安装包变小，但用户安装应用时，苹果会根据用户的机型自动选择合适的资源和对应CPU架构的二进制执行文件（也就是说用户本地可执行文件不会同时存在 armv7 和 arm64），减少下载流量和安装占用空间。
+
+在上传 App 时，配置 App Thinning 即可开启。分为三个部分： Slicing、Bitcode、On-Demand Resources。
+
+![02.png](./images/04.png)
+
+### Slicing
+
+在向 iTunes connect 上传 App 后，会做 App 进行分割，创建不同的变体来适配不同的设备，不同变体之间的差异主要体现在系统指令集和资源文件上。
+
+在项目的 xcassets 目录添加图片，2x 和 3x 图会分别放入到不同的变体中，用户从 App Store 下载时只下载特定的变体，而不会下载全部的指令集和资源文件。
+
+![02.png](./images/02.jpg)
+
+### Bitcode 
+
+Bitcode 是编译好的程序中间码，使用 Bitcode 上传到 iTunes Connect 的 app 将会在 Apple 服务器中进行链接和编译。该步骤主要是方便 Apple 推出新的架构或LLVM优化时无需重新上传 App。
+
+通过设置项目的 `Build Settings -> Enable Bitcode` 为 YES 开启Bitcode，使用时需要保证 App 中所有的静态库和动态库都支持，否则会编译失败。
+
+由于 App 的编译是在 Apple 服务器中进行的，所以本地无法获取 dSYM 文件进行崩溃分析，需在上传时勾选 `Include app symbols for your application* to receive symbolicated crash logs from Apple`，再从  `Xcode -> Window -> Organizer` 或者 Apple Store Connect 中下载对应的 dYSM文件。
+
+### On-Demand Resources
+
+可将部分资源单独下载，而不随着 App 一同下载，减少初始 App 的大小。例如相机的滤镜和游戏关卡。
+
+![03.png](./images/03.jpg)
+
 ## 其他
 
 ### 静态库瘦身 只保留需要用的指令集
@@ -82,7 +112,7 @@ simian 扫描重复代码
 
 ## 总结
 
-在项目瘦身过程中，上面列举的方式不一定都使用。例如当项目具有动态化，许多类和方法都不会在代码中直接产生引用，而可能是通过接口方式下发数据来使用，如果没有配置表会容易产生误删。
+在项目瘦身过程中，上面列举的方式不一定都适用。例如当项目具有动态化，许多类和方法都不会在代码中直接产生引用，而可能是通过接口方式下发数据来使用，如果没有配置表会容易产生误删。我们应该怀着敬畏之心，宁可多花点时间，避免误操作，毕竟瘦身虽可贵，安全价更高 😂。
 
 
 
