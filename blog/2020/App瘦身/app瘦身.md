@@ -18,23 +18,62 @@
 
 ## 资源瘦身
 
-### 无用图片资源
+### 移除无用图片资源
 
-通过资源关键字进行全局匹配，筛选出未使用的资源。有些资源使用是通过拼接或者后台下发名称，需额外进行检查，防止误删。
+通过资源关键字进行全局匹配，筛选出未使用的资源。有些资源使用是通过拼接或者后台下发名称，需对筛选出的资源进行筛选，防止误删。
 
-### 图片等资源压缩
+- [LSUnusedResources](https://github.com/tinymind/LSUnusedResources)
 
-建议使用无损压缩，例如 ImageOptim、compress命令等，否则需要设计接入进行检查。
+### 压缩图片等资源文件
+
+- 建议使用无损压缩，例如 [ImageOptim](https://imageoptim.com/mac)、[pngquant命令](https://pngquant.org)，如果涉及有损压缩最好要求设计介入进行资源检查。
+
+- 还可以使用 [Webp](https://developers.google.com/speed/webp/) 格式的图片，Webp 是由 Google 推出的图片格式，相同分辨率的图片体积只有 jpeg 格式的 1/3，可以使用 [Precompiled Utilities](https://developers.google.com/speed/webp/docs/precompiled) 进行格式压缩转换，目前 SDWebImage、Kingfisher 都用支持该格式解析的拓展。
+
+- Xcode 本身也提供压缩图片的编译选项
+
+  - Compress PNG Files
+
+    打包的时候基于 pngcrush 工具自动对图片进行无损压缩，如果我们已自行对图片进行压缩，该选项最好关闭。
+
+  - Remove Text Medadata From PNG Files
+
+    移除 PNG 资源的文本字符，比如图像名称、作者、版权、创作时间、注释等信息。
+
+  ![01.png](./images/05.png)
 
 
 
-### 重复文件
 
 
+### 删除重复文件
 
-### 图片资源放入image.xcassets
+通过校验所有资源的 MD5，筛选出项目中的重复资源。
 
+ 大小对比 > 部分 MD5 签名对比 > 完整 MD5 签名对比 > 逐字节对比
 
+- [fdupes](https://github.com/adrianlopezroche/fdupes) 
+
+### 图片资源放入.xcassets
+
+- 尽量将图片资源放入 Images.xcassets 中，包括 pod 库的图片。 Images.xcassets 中的图片加载后会有缓存，加快调用，在最终打包时会自动进行压缩（Compress PNG Files），并且根据最终运行设备进行 2x 和 3x 分发。
+
+- 对于内部 Pod 库中的资源文件，我们可以在 Pod 库里面的 Resources 目录下新建 Asset Catalog 文件，命名为 Images.xcassets，移入所有图片文件，接着手动修改该 SDK 的 `podspec` 文件指定使用该 Images.xcassets。
+
+  ```
+  s.resource_bundles = {
+      'xxsdk' => ['PAX/Assets/*.xcassets']
+  }
+  ```
+
+  > Pod 资源文件的引用方式分为 resource_bundles 和 resources，这里我们使用的是 resource_bundles。
+  >
+  > - resource_bundles
+  > - resources
+  >
+  > 
+
+  
 
 
 
@@ -63,6 +102,7 @@ simian 扫描重复代码
 - Strip Link Product设成YES，WeChatWatch 可执行文件减少0.3M
 - Make Strings Read-Only设为YES，也许是因为微信工程从低版本Xcode升级过来，这个编译选项之前一直为NO，设为YES后可执行文件减少了3M
 - 去掉异常支持，Enable C++ Exceptions和Enable Objective-C Exceptions设为NO，并且Other C Flags添加-fno-exceptions，可执行文件减少了27M，其中__gcc_except_tab段减少了17.3M，__text减少了9.7M，效果特别明显。可以对某些文件单独支持异常，编译选项加上-fexceptions即可。但有个问题，假如ABC三个文件，AC文件支持了异常，B不支持，如果C抛了异常，在模拟器下A还是能捕获异常不至于Crash，但真机下捕获不了（有知道原因可以在下面留言：）。去掉异常后，Appstore后续几个版本Crash率没有明显上升。个人认为关键路径支持异常处理就好，像启动时NSCoder读取setting配置文件得要支持捕获异常，等等
+- Valid Architectures 不支持32位以及 iOS8 ，可去掉 armv7 ，减小生成的 ipa 包。
 
 
 
