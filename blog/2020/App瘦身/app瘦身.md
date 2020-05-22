@@ -26,9 +26,19 @@
 
 ### 压缩图片等资源文件
 
-- 建议使用无损压缩，例如 [ImageOptim](https://imageoptim.com/mac)、[pngquant命令](https://pngquant.org)，如果涉及有损压缩最好要求设计介入进行资源检查。
+- 建议使用无损压缩，例如 [ImageOptim](https://imageoptim.com/mac)、[pngquant命令](https://pngquant.org)、[tinypng](https://tinypng.com/) ，如果涉及有损压缩最好要求设计介入进行资源检查。
+- 还可以使用 [Webp](https://developers.google.com/speed/webp/) 格式的图片，Webp 是由 Google 推出的图片格式，有损压缩模式下图片体积只有 jpeg 格式的 1/3，无损压缩也能减小 1/4，可以使用 [cwebp](https://developers.google.com/speed/webp/docs/precompiled) 进行格式压缩转换，目前 SDWebImage、Kingfisher 都用支持该格式解析的拓展。无损压缩命令如下：
 
-- 还可以使用 [Webp](https://developers.google.com/speed/webp/) 格式的图片，Webp 是由 Google 推出的图片格式，相同分辨率的图片体积只有 jpeg 格式的 1/3，可以使用 [Precompiled Utilities](https://developers.google.com/speed/webp/docs/precompiled) 进行格式压缩转换，目前 SDWebImage、Kingfisher 都用支持该格式解析的拓展。
+  ```
+  // 语法
+  cwebp [options] input_file -o output_file.webp
+  // 无损压缩
+  cwebp -lossless original.png -o new.webp
+  ```
+
+  除了终端命令，还可以使用 [iSparta](http://isparta.github.io/) 进行批量转换格式。
+
+  ![06](/Users/yehuangbin/Desktop/github/All-Of-Notes/blog/2020/App瘦身/images/06.png)
 
 - Xcode 本身也提供压缩图片的编译选项
 
@@ -66,10 +76,23 @@
   }
   ```
 
-  > Pod 资源文件的引用方式分为 resource_bundles 和 resources，这里我们使用的是 resource_bundles。
+  > Pod 资源文件的引用方式分为 `resource_bundles` 和 `resources`，这里我们使用的是 `resource_bundles`，会为为指定的资源打一个 `.bundle`，`.bundle`包含一个 `Assets.car`，获取图片的时候要严格指定 `.bundle` 的位置，很好的隔离了各个库或者一个库下的资源包，使用图片时要先获取 `bundle`。
   >
-  > - resource_bundles
-  > - resources
+  > ```objective-c
+  > NSString *bundlePath = [[NSBundle bundleForClass:[self class]].resourcePath stringByAppendingPathComponent:@"/PAX.bundle"];
+  >         NSBundle *resource_bundle = [NSBundle bundleWithPath:bundlePath];
+  >         UIImage *image = [UIImage imageNamed:@"xxxx" inBundle:resource_bundle compatibleWithTraitCollection:nil];
+  > ```
+  >
+  > 
+  >
+  > - `resource_bundles`
+  >
+  >   允许定义当前 Pod 库的资源包的**名称和文件**。用 hash 的形式来声明，key 是 bundle 的名称，value 是需要包括的文件的通配 patterns。CocoaPods 官方强烈推荐使用 `resource_bundles`，因为用 key-value 可以避免相同名称资源的名称冲突。同时建议 bundle 的名称至少应该包括 Pod 库的名称，可以尽量减少同名冲突
+  >
+  > - `resources`
+  >
+  >   使用 `resources` 来指定资源，被指定的资源只会简单的被 copy 到目标工程中（主工程）。官方认为用 `resources` 是无法避免同名资源文件的冲突的，同时，Xcode 也不会对这些资源做优化。
   >
   > 
 
@@ -99,6 +122,8 @@ simian 扫描重复代码
 
 ## 编译选项优化
 
+- Generate Debug Symbols
+- 
 - Strip Link Product设成YES，WeChatWatch 可执行文件减少0.3M
 - Make Strings Read-Only设为YES，也许是因为微信工程从低版本Xcode升级过来，这个编译选项之前一直为NO，设为YES后可执行文件减少了3M
 - 去掉异常支持，Enable C++ Exceptions和Enable Objective-C Exceptions设为NO，并且Other C Flags添加-fno-exceptions，可执行文件减少了27M，其中__gcc_except_tab段减少了17.3M，__text减少了9.7M，效果特别明显。可以对某些文件单独支持异常，编译选项加上-fexceptions即可。但有个问题，假如ABC三个文件，AC文件支持了异常，B不支持，如果C抛了异常，在模拟器下A还是能捕获异常不至于Crash，但真机下捕获不了（有知道原因可以在下面留言：）。去掉异常后，Appstore后续几个版本Crash率没有明显上升。个人认为关键路径支持异常处理就好，像启动时NSCoder读取setting配置文件得要支持捕获异常，等等
