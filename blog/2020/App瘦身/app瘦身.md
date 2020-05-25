@@ -20,9 +20,15 @@
 
 ### 移除无用图片资源
 
-通过资源关键字进行全局匹配，筛选出未使用的资源。有些资源使用是通过拼接或者后台下发名称，需对筛选出的资源进行筛选，防止误删。
+- 目前市面上基本不适配 iPhone4 以下的机型了，1x 的图片都可以移除。
 
-- [LSUnusedResources](https://github.com/tinymind/LSUnusedResources)
+- 通过资源关键字进行全局匹配，筛选出未使用的资源。有些资源使用是通过拼接或者后台下发名称，需对筛选出的资源进行筛选，防止误删。
+
+- 这里推荐使用工具 [LSUnusedResources](https://github.com/tinymind/LSUnusedResources)，可以根据项目实际情况定义查找文件的正则表达式。另外建议勾选 Ignore similar name ，避免扫描出图片组。
+
+  ![09](./images/09.png)
+
+  
 
 ### 压缩图片等资源文件
 
@@ -66,7 +72,7 @@
 
 ### 图片资源放入.xcassets
 
-- 尽量将图片资源放入 Images.xcassets 中，包括 pod 库的图片。 Images.xcassets 中的图片加载后会有缓存，加快调用，在最终打包时会自动进行压缩（Compress PNG Files），并且根据最终运行设备进行 2x 和 3x 分发。
+- 尽量将图片资源放入 Images.xcassets 中，包括 pod 库的图片。 Images.xcassets 中的图片加载后会有缓存，提升加载速度，并且在最终打包时会自动进行压缩（Compress PNG Files），再根据最终运行设备进行 2x 和 3x 分发。
 
 - 对于内部 Pod 库中的资源文件，我们可以在 Pod 库里面的 Resources 目录下新建 Asset Catalog 文件，命名为 Images.xcassets，移入所有图片文件，接着手动修改该 SDK 的 `podspec` 文件指定使用该 Images.xcassets。
 
@@ -96,13 +102,35 @@
   >
   > 
 
-  
+
+
+### 部分大资源文件通过运行下载
+
+对于一些非必要的大资源文件，例如字体库、换肤资源，可以在 App 启动后通过异步下载到本地，而不用直接放在 ipa 包内。
 
 
 
 ## 代码瘦身
 
-### LinkMap 结合 Mach-O 找无用代码
+### 删除未使用代码
+
+####  LinkMap 结合 Mach-O 
+
+LinkMap 的 Symbols 中会列出所有方法、类、block及它们的大小，通过获取 LinkMap 即可以获得方法和类的全集；再通过 MachOView 获得使用过的方法和类，两者的差值就是我们要找寻的未使用代码。
+
+- 获取 LinkMap 
+
+  将 Build Setting - Write Link Map File 设置为 Yes，接着设置 Path to Link Map File 指定文件存放位置，即可在每次编译后获取对应的 LinkMap 文件。
+
+- MachOView
+
+  [MachOView](https://github.com/gdbinit/MachOView) 是一款开源软件，可以查看 Mach-O 文件的内容。OC 的方法都会通过 objc_msgSend 来调用。可以通过 Mach-O 查看 ``__objc_selrefs`` 这个 section 来获取 selector 参数的，另外 `__objc_classrefs` 和 `__objc_superrefs` 这两个 section 可以获取调用过的类和父类。
+
+  ![07](./images/07.png)
+
+**该方式可作为参考使用，移除的代码还需要经过二次确认，防止存在拼接字符串动态等调用方式。**
+
+
 
 - 查找无用 selector
   - 结合LinkMap文件的__TEXT.__text，通过正则表达式**([+|-][.+\s(.+)])**，我们可以提取当前可执行文件里所有objc类方法和实例方法（SelectorsAll）。再使用otool命令**otool -v -s __DATA __objc_selrefs**逆向__DATA.__objc_selrefs段，提取可执行文件里引用到的方法名（UsedSelectorsAll），我们可以大致分析出SelectorsAll里哪些方法是没有被引用的（SelectorsAll-UsedSelectorsAll）。注意，系统API的Protocol可能被列入无用方法名单里，如UITableViewDelegate的方法，我们只需要对这些Protocol里的方法加入白名单过滤即可。
@@ -110,23 +138,85 @@
   - 通过搜索"**[ClassName alloc/new**"、"**ClassName \***"、"**[ClassName class]**"等关键字在代码里是否出现
   - 通过otool命令逆向__DATA.__objc_classlist段和__DATA.__objc_classrefs段来获取当前所有oc类和被引用的oc类，两个集合相减就是无用oc类
 
+
+
+#### AppCode
+
+当工程代码量不大时，还可以使用 AppCode 自带的静态分析工具辅助检查未使用的类和代码，功能在菜单 Code - Inspect Code。
+
+![08](./images/08.png)
+
+**该静态检测方式存在的问题较多，适合作为平常开发的辅助检测工具使用**。具体的问题有：
+
+- SDK定义的未使用的协议会被判定为无用协议
+- 如果子类使用了父类的方法，父类的这个方法不会被认为使用了
+- 通过点的方式使用属性，该属性会被认为没有使用
+- 使用 performSelector 方式调用的方法也检查不出来，比如 self performSelector:@selector(arrivalRefreshTime)
+- 运行时声明类的情况检查不出来。比如通过 NSClassFromString 方式调用的类会被查出为没有使用的类，比如 layerClass = NSClassFromString(@“SMFloatLayer”)。还有以[[self class] accessToken] 这样不指定类名的方式使用的类，会被认为该类没有被使用。像 UITableView 的自定义的 Cell 使用 registerClass，这样的情况也会认为这个 Cell 没有被使用。
+
+
+
+### 删除版本遗留代码
+
+随着项目业务的迭代，必然会出现版本遗弃的功能，这些功能可能连入口都已经屏蔽。对于这些老业务代码，也是应该被移除的。
+
+我们可以通过 Runtime 提供的 `isInitialized` 方法在运行时检测一个类是否有被使用过，更多代码可查看 [objc4-750](https://github.com/SimonYHB/objc4-750.git)。
+
+```objective-c
+
+// 类的方法列表已修复
+#define RW_METHODIZED         (1<<30)
+
+// 类已经初始化了
+#define RW_INITIALIZED        (1<<29)
+
+// 类在初始化过程中
+#define RW_INITIALIZING       (1<<28)
+
+// class_rw_t->ro 是 class_ro_t 的堆副本
+#define RW_COPIED_RO          (1<<27)
+
+// 类分配了内存，但没有注册
+#define RW_CONSTRUCTING       (1<<26)
+
+// 类分配了内存也注册了
+#define RW_CONSTRUCTED        (1<<25)
+
+// GC：class有不安全的finalize方法
+#define RW_FINALIZE_ON_MAIN_THREAD (1<<24)
+
+// 类的 +load 被调用了
+#define RW_LOADED             (1<<23)
+
+bool isInitialized() {
+   return getMeta()->data()->flags & RW_INITIALIZED;
+}
+```
+
+
+
 ### 精简代码
 
-simian 扫描重复代码
-
-### 通过 AppCode 找出无用代码
-
-### 运行时检查类是否真正被使用过
+simian 扫描重复代码he
 
 
 
 ## 编译选项优化
 
+- Symbols Hidden by Default
+
+  Symbols Hidden by Default会把所有符号都定义成”private extern”
+
+- Strip Link Product 和 *Deployment* Postprocessing设成YES，WeChatWatch 可执行文件减少0.3M
+
+  Strip Linked Product 选项在 Deployment Postprocessing 设置为 YES 的时候才生效，当Strip Linked Product设为YES的时候，ipa会去除掉symbol符号，运行 App 断点不会中断，在程序中打印[NSThread callStackSymbols]也无法看到类名和方法名。而在程序崩溃时，终端的函数调用栈中也无法看到类名和方法名。但是不会影响正常的崩溃日志生成和解析，依然可以通过符号表来解析崩溃日志，适合线上使用。
+
 - Generate Debug Symbols
-- 
-- Strip Link Product设成YES，WeChatWatch 可执行文件减少0.3M
+
 - Make Strings Read-Only设为YES，也许是因为微信工程从低版本Xcode升级过来，这个编译选项之前一直为NO，设为YES后可执行文件减少了3M
+
 - 去掉异常支持，Enable C++ Exceptions和Enable Objective-C Exceptions设为NO，并且Other C Flags添加-fno-exceptions，可执行文件减少了27M，其中__gcc_except_tab段减少了17.3M，__text减少了9.7M，效果特别明显。可以对某些文件单独支持异常，编译选项加上-fexceptions即可。但有个问题，假如ABC三个文件，AC文件支持了异常，B不支持，如果C抛了异常，在模拟器下A还是能捕获异常不至于Crash，但真机下捕获不了（有知道原因可以在下面留言：）。去掉异常后，Appstore后续几个版本Crash率没有明显上升。个人认为关键路径支持异常处理就好，像启动时NSCoder读取setting配置文件得要支持捕获异常，等等
+
 - Valid Architectures 不支持32位以及 iOS8 ，可去掉 armv7 ，减小生成的 ipa 包。
 
 
@@ -161,9 +251,62 @@ Bitcode 是编译好的程序中间码，使用 Bitcode 上传到 iTunes Connect
 
 ![03.png](./images/03.jpg)
 
+
+
 ## 其他
 
-### 静态库瘦身 只保留需要用的指令集
+### Framework瘦身，只保留需要用的指令集
+
+没有开启 Bitcode 时，App 内的 Framework 会包含多个指令集，我们可以手动移除不需要的指令集。
+
+Framework 也是 Mach-O 格式文件，一般第三方的 Framework 为了适配多种架构，都会包含全部 CPU 的指令集，此时的二进制文件称谓胖二进制文件。
+
+例如百度地图的定位框架 BMKLocationKit，就包含了所有 CPU 的指令集，我们可以通过 `lipo -info BMKLocationKit`  看到如下信息： 
+
+```
+Architectures in the fat file: /Users/BMKLocationKit.framework/BMKLocationKit are: armv7 armv7s i386 x86_64 arm64
+```
+
+k也可以使用 MachOView 工具查看：
+
+![10](./images/10.png)
+
+可以看到 BMKLocationKit 包含了 `armv7 armv7s i386 x86_64 arm64` 5种指令集，而对于大多数移动端 App，只需要 armv7s 和 arm64 指令集就足够了。
+
+不同手机型号对应的指令集如下：
+
+| 指令集 | 型号                                                         |
+| ------ | ------------------------------------------------------------ |
+| armv7  | iPhone4s之前 \| iPad｜iPad2｜iPad3(The New iPad)｜iPad mini｜iPod Touch 3G |
+| armv7s | iPhone5｜iPhone5C｜iPad4(iPad with Retina Display)           |
+| arm64  | iPhone5s之后的机型 \| iPad Air  \| iPad mini2(iPad mini with Retina Display)等 |
+| x86_64 | 模拟器64位处理器 \| Mac应用                                  |
+| I386   | 模拟器32位处理器 \| Mac应用                                  |
+
+我们可以通过 lipo 命令拆分胖二进制文件，只保留需要的指令集，以 BMKLocationKit 为例，指令如下：
+
+```objective-c
+lipo -info BMKLocationKit.framework/BMKLocationKit
+// Architectures in the fat file: BMKLocationKit are: armv7 armv7s i386 x86_64 arm64
+  
+// 抽取armv7s架构
+lipo BMKLocationKit.framework/BMKLocationKit -thin armv7s -output BMK/BMKLocationKitArmv7s
+  
+// 抽取arm64架构
+lipo BMKLocationKit.framework/BMKLocationKit -thin arm64 -output BMK/BMKLocationKitArm64
+  
+// 合成armv7s和arm64
+cd /Users/yehuangbin/Desktop/BMK
+lipo -create BMKLocationKitArm64 BMKLocationKitArmv7s -output BMKLocationKit
+  
+lipo -info BMKLocationKit
+// Architectures in the fat file: BMKLocationKit are: armv7s arm64
+
+// 替换原先的二进制文件
+mv -f BMKLocationKit ../BMKLocationKit.framework/
+```
+
+移除多余的指令集后，framework 大小从 4.3MB 降到 1.8MB，效果还是很显著的。
 
 ### App Extension 用动态库替代静态库
 
@@ -171,31 +314,44 @@ Bitcode 是编译好的程序中间码，使用 Bitcode 上传到 iTunes Connect
 
 ### 慎重引入第三方库
 
+- 不要用引入功能重复的第三库，例如 YYModel 和 JSONModel、AFNetworking 和 MKNetworkingKt。
+- 充分考虑引入的必要型，避免”因小引大“，例如只是需要 JSON 转模型功能而引入了整个 YYKit，更好的方式应该是将使用的部分抽离出来。
+
 ### H5本地资源优化（只保留主页面）
 
 
 
 ## 总结
 
-在项目瘦身过程中，上面列举的方式不一定都适用。例如当项目具有动态化，许多类和方法都不会在代码中直接产生引用，而可能是通过接口方式下发数据来使用，如果没有配置表会容易产生误删。我们应该怀着敬畏之心，宁可多花点时间，避免误操作，毕竟瘦身虽可贵，安全价更高 😂。
+在实际项目瘦身过程中，上面列举的方式不一定都适用。例如当项目具有动态化，许多类和方法都不会在代码中直接产生引用，而可能是通过接口方式下发数据来使用，如果没有配置表会容易产生误删。我们应该怀着敬畏之心，宁可多花点时间，避免误操作，毕竟瘦身虽可贵，安全价更高。
 
 
 
 ### 参考资料
 
-[10 | 包大小：如何从资源和代码层面实现全方位瘦身？-极客时间](https://time.geekbang.org/column/article/88573?utm_source=web&utm_medium=pinpaizhuanqu&utm_campaign=baidu&utm_term=pinpaizhuanqu&utm_content=0427)
+[包大小：如何从资源和代码层面实现全方位瘦身？](https://time.geekbang.org/column/article/88573?utm_source=web&utm_medium=pinpaizhuanqu&utm_campaign=baidu&utm_term=pinpaizhuanqu&utm_content=0427)
+
+[Humble Assets Catalog](http://lingyuncxb.com/2019/04/14/HumbleAssetCatalog/)
 
 [iOS-APP包的瘦身之旅（从116M到现在的36M的减肥之路）_移动开发_ZFJ_张福杰-CSDN博客](https://blog.csdn.net/u014220518/article/details/79725478)
 
 [iOS 瘦身之道](https://juejin.im/post/5cdd27d4f265da036902bda5)
 
-[iOS安装包瘦身指南](http://www.zoomfeng.com/blog/ipa-size-thin.html)
 
-[Humble Assets Catalog](http://lingyuncxb.com/2019/04/14/HumbleAssetCatalog/)
+
+
 
 https://github.com/skyming/iOS-Performance-Optimization
 
 
 
 - [iOS微信安装包瘦身](https://mp.weixin.qq.com/s?__biz=MzAwNDY1ODY2OQ==&mid=207986417&idx=1&sn=77ea7d8e4f8ab7b59111e78c86ccfe66&scene=24&srcid=0921TTAXHGHWKqckEHTvGzoA#rd)
+
+
+
+https://juejin.im/post/5cdd27d4f265da036902bda5#heading-17
+
+https://www.infoq.cn/article/clang-plugin-ios-app-size-reducing/
+
+https://mp.weixin.qq.com/s?__biz=MzAwNDY1ODY2OQ==&mid=207986417&idx=1&sn=77ea7d8e4f8ab7b59111e78c86ccfe66&scene=24&srcid=0921TTAXHGHWKqckEHTvGzoA#rd
 
