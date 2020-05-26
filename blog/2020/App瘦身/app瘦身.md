@@ -14,8 +14,6 @@
 
 
 
-
-
 ## 资源瘦身
 
 ### 移除无用图片资源
@@ -60,15 +58,36 @@
 
 
 
-
-
 ### 删除重复文件
 
-通过校验所有资源的 MD5，筛选出项目中的重复资源。
+通过校验所有资源的 MD5，筛选出项目中的重复资源，推荐使用 [fdupes](https://github.com/adrianlopezroche/fdupes) 工具进行重复文件扫描，fdupes 是 Linux 平台的一个开源工具，由 C 语言编写 ，文件比较顺序是`大小对比 > 部分 MD5 签名对比 > 完整 MD5 签名对比 > 逐字节对比`。
 
- 大小对比 > 部分 MD5 签名对比 > 完整 MD5 签名对比 > 逐字节对比
+通过 Homebrew 安装 fdupes：
 
-- [fdupes](https://github.com/adrianlopezroche/fdupes) 
+```
+brew install fdupes
+```
+
+查看目标文件夹下的重复文件：
+
+````````
+fdupes -Sr 文件夹   // 查看文件夹下所有子目录中的重复文件及大小
+fdupes -Sr 文件夹 > 输出地址.txt  // 将信息输出到txt文件中
+
+````````
+
+输出内容如下，一般情况下，相同文件仅保留一份，修改对应的引用即可。
+
+```
+4474 bytes each:
+Test/Images.xcassets/TabBarImage/tabBar_2.imageset/tabBar_2@2x.png
+Test/Resource/TabBarImage/tabBar_2@2x.png
+
+3912 bytes each:
+Test/Images.xcassets/TabBarImage/tabBar_3.imageset/tabBar_3@2x.png
+Test/Resource/TabBarImage/tabBar_3@2x.png
+
+```
 
 ### 图片资源放入.xcassets
 
@@ -82,7 +101,7 @@
   }
   ```
 
-  > Pod 资源文件的引用方式分为 `resource_bundles` 和 `resources`，这里我们使用的是 `resource_bundles`，会为为指定的资源打一个 `.bundle`，`.bundle`包含一个 `Assets.car`，获取图片的时候要严格指定 `.bundle` 的位置，很好的隔离了各个库或者一个库下的资源包，使用图片时要先获取 `bundle`。
+  > Pod 资源文件的引用方式分为 `resource_bundles` 和 `resources`，这里我们使用的是 `resource_bundles`，会为为指定的资源打一个 `.bundle`，`.bundle`包含一个 `Assets.car`，获取图片的时候要严格指定 `bundle` 的位置，能很好的隔离各个库资源包。
   >
   > ```objective-c
   > NSString *bundlePath = [[NSBundle bundleForClass:[self class]].resourcePath stringByAppendingPathComponent:@"/PAX.bundle"];
@@ -129,16 +148,6 @@ LinkMap 的 Symbols 中会列出所有方法、类、block及它们的大小，�
   ![07](./images/07.png)
 
 **该方式可作为参考使用，移除的代码还需要经过二次确认，防止存在拼接字符串动态等调用方式。**
-
-
-
-- 查找无用 selector
-  - 结合LinkMap文件的__TEXT.__text，通过正则表达式**([+|-][.+\s(.+)])**，我们可以提取当前可执行文件里所有objc类方法和实例方法（SelectorsAll）。再使用otool命令**otool -v -s __DATA __objc_selrefs**逆向__DATA.__objc_selrefs段，提取可执行文件里引用到的方法名（UsedSelectorsAll），我们可以大致分析出SelectorsAll里哪些方法是没有被引用的（SelectorsAll-UsedSelectorsAll）。注意，系统API的Protocol可能被列入无用方法名单里，如UITableViewDelegate的方法，我们只需要对这些Protocol里的方法加入白名单过滤即可。
-- 查找无用 oc类
-  - 通过搜索"**[ClassName alloc/new**"、"**ClassName \***"、"**[ClassName class]**"等关键字在代码里是否出现
-  - 通过otool命令逆向__DATA.__objc_classlist段和__DATA.__objc_classrefs段来获取当前所有oc类和被引用的oc类，两个集合相减就是无用oc类
-
-
 
 #### AppCode
 
@@ -193,31 +202,127 @@ bool isInitialized() {
 }
 ```
 
+### 精简重复代码
+
+多人开发的项目可能存在大量复制粘贴代码，可以通过 [PMD](https://pmd.github.io/) 扫描重复的代码片段，再结合实际逻辑重构代码。
+
+**PMD** 是一个代码静态扫描工具，直接通过 `brew` 命令安装。
+
+```
+brew install pmd
+```
+
+安装完成后，通过 PMD-CPD 即可得到重复代码信息，格式如下：
+
+```
+pmd cpd --files 扫描文件目录 --minimum-tokens 70 --language objectivec --encoding UTF-8 --format xml > repeat.xml
+```
+
+其中，`--files` 用于指定文件目录，`--minimum-tokens` 用于设置最小重复代码阈值，`--format` 用于指定输出文件格式，支持 xml/csv/txt 等格式，这里建议使用 xml，方便查看 。
+
+生成的 XML 文件内容如下，根据 file 标签信息就能定位到重复代码位置。
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd-cpd>
+   <duplication lines="87" tokens="565">
+      <file column="1" endcolumn="3" endline="197" line="111"
+            path="/Users/github/iOS-Develop-Tools/IOSDevelopTools/IOSDevelopTools/OCTimeConsumeMonitor/YECallMonitor.m"/>
+      <file column="1" endcolumn="3" endline="152" line="66"
+            path="/Users/github/iOS-Develop-Tools/IOSDevelopTools/IOSDevelopTools/OCTimeConsumeMonitor/YECallTraceShowViewController.m"/>
+      <codefragment><![CDATA[}
+#pragma private
+- (NSUInteger)findStartDepthIndex:(NSUInteger)start arr:(NSArray *)arr
+{
+    NSUInteger index = start;
+    if (arr.count > index) {
+        YECallRecordModel *model = arr[index];
+        int minDepth = model.depth;
+        int minTotal = model.total;
+        for (NSUInteger i = index+1; i < arr.count; i++) {
+            YECallRecordModel *tmp = arr[i];
+            if (tmp.depth < minDepth || (tmp.depth == minDepth && tmp.total < minTotal)) {
+                minDepth = tmp.depth;
+                minTotal = tmp.total;
+                index = i;
+            }
+        }
+    }
+    return index;
+}
+
+- (void)setRecordDic:(NSMutableArray *)arr record:(YEThreadCallRecord *)record
+{
+    if ([arr isKindOfClass:NSMutableArray.class] && record) {
+        int total=1;
+        for (NSUInteger i = 0; i < arr.count; i++)
+        {
+            YECallRecordModel *model = arr[i];
+            if (model.depth == record->depth) {
+                total = model.total+1;
+                break;
+            }
+        }
+        
+        YECallRecordModel *model = [[YECallRecordModel alloc] initWithCls:record->cls sel:record->sel time:record->time depth:record->depth total:total];
+        [arr insertObject:model atIndex:0];
+    }
+}
+
+]]></codefragment>
+   </duplication>
+</pmd-cpd>
+```
 
 
-### 精简代码
 
-simian 扫描重复代码he
+## 与包体积有关的编译选项
 
+### 建议修改
 
+- Valid Architectures 
 
-## 编译选项优化
+  设置编译生成的 ipa 包所支持的架构，不支持32位以及 iOS8 ，可去掉 armv7及之前的架构 ，减小生成的 ipa 包。
 
-- Symbols Hidden by Default
+- Strip Link Product 和 *Deployment* Postprocessing
 
-  Symbols Hidden by Default会把所有符号都定义成”private extern”
-
-- Strip Link Product 和 *Deployment* Postprocessing设成YES，WeChatWatch 可执行文件减少0.3M
-
-  Strip Linked Product 选项在 Deployment Postprocessing 设置为 YES 的时候才生效，当Strip Linked Product设为YES的时候，ipa会去除掉symbol符号，运行 App 断点不会中断，在程序中打印[NSThread callStackSymbols]也无法看到类名和方法名。而在程序崩溃时，终端的函数调用栈中也无法看到类名和方法名。但是不会影响正常的崩溃日志生成和解析，依然可以通过符号表来解析崩溃日志，适合线上使用。
+  Strip Linked Product 默认为 Yes，Deployment Postprocessing 默认为 No，Strip Linked Product 在 *Deployment* Postprocessing 设置为 YES 的时候才生效。当Strip Linked Product设为YES的时候，ipa会去除掉symbol符号，运行 App 断点不会中断，在程序中打印[NSThread callStackSymbols]也无法看到类名和方法名。而在程序崩溃时，终端的函数调用栈中也无法看到类名和方法名。但是不会影响正常的崩溃日志生成和解析，依然可以通过符号表来解析崩溃日志，适合线上使用，建议在 release 下都设置为 Yes。
 
 - Generate Debug Symbols
 
-- Make Strings Read-Only设为YES，也许是因为微信工程从低版本Xcode升级过来，这个编译选项之前一直为NO，设为YES后可执行文件减少了3M
+  默认为 Yes，当设置为 Yes 时，编译生成的 .o 文件会更大，包含了断点信息和符号化的调试信息，方便开发阶段调试，建议在 release 下设置为 No，线上需要获取崩溃信息时搭配编译生成的 dSYM 文件解析符号。
 
-- 去掉异常支持，Enable C++ Exceptions和Enable Objective-C Exceptions设为NO，并且Other C Flags添加-fno-exceptions，可执行文件减少了27M，其中__gcc_except_tab段减少了17.3M，__text减少了9.7M，效果特别明显。可以对某些文件单独支持异常，编译选项加上-fexceptions即可。但有个问题，假如ABC三个文件，AC文件支持了异常，B不支持，如果C抛了异常，在模拟器下A还是能捕获异常不至于Crash，但真机下捕获不了（有知道原因可以在下面留言：）。去掉异常后，Appstore后续几个版本Crash率没有明显上升。个人认为关键路径支持异常处理就好，像启动时NSCoder读取setting配置文件得要支持捕获异常，等等
+- Enable C++ Exceptions 和 Enable Objective-C Exceptions
 
-- Valid Architectures 不支持32位以及 iOS8 ，可去掉 armv7 ，减小生成的 ipa 包。
+  默认都为 Yes，用于捕获 C++ 和 OC 的异常，建议在 release 下设置为 Yes，配合在 Other C Flags 添加 -fno-exceptions 和 -fno-rtt  
+
+  ---------------------未完
+
+  去掉异常支持，Enable C++ Exceptions和Enable Objective-C Exceptions设为NO，并且Other C Flags添加-fno-exceptions，可执行文件减少了27M，其中__gcc_except_tab段减少了17.3M，__text减少了9.7M，效果特别明显。可以对某些文件单独支持异常，编译选项加上-fexceptions即可。但有个问题，假如ABC三个文件，AC文件支持了异常，B不支持，如果C抛了异常，在模拟器下A还是能捕获异常不至于Crash，但真机下捕获不了（有知道原因可以在下面留言：）。去掉异常后，Appstore后续几个版本Crash率没有明显上升。个人认为关键路径支持异常处理就好，像启动时NSCoder读取setting配置文件得要支持捕获异常，等等
+
+  
+
+### 保持不变
+
+- Generate Debug Symbols
+
+  默认为 Yes，用生成dSYM文件，有助于解析崩溃信息。
+
+- Make Strings Read-Only
+
+  默认为 Yes，复用字符串字面量。
+
+- Dead Code Stripping
+
+  默认为 Yes，去除冗余代码。
+
+- Optimization Level
+
+  Release 下默认为 Fastest, Smalllest[-Os]，自动优化代码。
+
+- Symbols Hidden by Default
+
+  Release 下默认为 Yes，会移除符号信息，把所有符号都定义成 private extern。
 
 
 
@@ -255,7 +360,9 @@ Bitcode 是编译好的程序中间码，使用 Bitcode 上传到 iTunes Connect
 
 ## 其他
 
-### Framework瘦身，只保留需要用的指令集
+### Framework 瘦身
+
+####  只保留需要的指令集
 
 没有开启 Bitcode 时，App 内的 Framework 会包含多个指令集，我们可以手动移除不需要的指令集。
 
@@ -308,6 +415,35 @@ mv -f BMKLocationKit ../BMKLocationKit.framework/
 
 移除多余的指令集后，framework 大小从 4.3MB 降到 1.8MB，效果还是很显著的。
 
+#### 移除 Framework 的未使用代码
+
+通常我们可能因为某一个功能需求而引入较庞大的第三方 Framework，可以拆分 machO 文件，将不需要的 .o 文件移除。
+
+由于我们不是 framework 的作者，不熟悉其代码调用逻辑，移除后应多次验证是否会有关联影响，整天流程如图所示，具体操作可查看 [删除 FrameWork 中无用 mach-O 文件](https://www.infoq.cn/article/ios-thinning-delete-unnecessary-mach-o/)。
+
+![10](./images/11.png)
+
+涉及到的终端指令：
+
+```
+// 查看二进制文件的架构信息
+lipo -info 二进制文件  
+
+// 按架构拆分二进制文件，iOS常用 arm64、armv7s
+lipo 二进制文件 -thin 架构 -output 新架构二进制文件
+
+// 拆分二进制文件具体的内容(.o文件列表)
+ar -x 二进制文件
+
+// 将.o合并成二进制文件
+libtool -static -o 新二进制文件 *.o
+
+// 合并将不同架构二进制文件
+lipo -create a架构二进制文件 b架构二进制文件 -output 合并后的二进制文件
+```
+
+
+
 ### App Extension 用动态库替代静态库
 
 减少了二进制文件的体积，但增加了整个包的大小，还会增加启动时间，需多方面考虑。
@@ -319,23 +455,27 @@ mv -f BMKLocationKit ../BMKLocationKit.framework/
 
 ### H5本地资源优化（只保留主页面）
 
-
+项目中有离线资源包，可考虑只保留主页面的代码和资源，通过增量更新的方式，启动后再进行其余离线包的下载。
 
 ## 总结
 
-在实际项目瘦身过程中，上面列举的方式不一定都适用。例如当项目具有动态化，许多类和方法都不会在代码中直接产生引用，而可能是通过接口方式下发数据来使用，如果没有配置表会容易产生误删。我们应该怀着敬畏之心，宁可多花点时间，避免误操作，毕竟瘦身虽可贵，安全价更高。
+在实际项目瘦身过程中，上面列举的方式不一定都适用。例如当项目具有动态化，许多类和方法都不会在代码中直接产生引用，而可能是通过接口方式下发数据来使用，如果没有配置表会容易产生误删。我们应该怀着敬畏之心，宁可多花点时间，避免误操作，毕竟瘦身虽可贵，安全价更高！
+
+### 工具汇总
 
 
 
 ### 参考资料
 
-[包大小：如何从资源和代码层面实现全方位瘦身？](https://time.geekbang.org/column/article/88573?utm_source=web&utm_medium=pinpaizhuanqu&utm_campaign=baidu&utm_term=pinpaizhuanqu&utm_content=0427)
+- [包大小：如何从资源和代码层面实现全方位瘦身？](https://time.geekbang.org/column/article/88573?utm_source=web&utm_medium=pinpaizhuanqu&utm_campaign=baidu&utm_term=pinpaizhuanqu&utm_content=0427)
 
-[Humble Assets Catalog](http://lingyuncxb.com/2019/04/14/HumbleAssetCatalog/)
+- [Humble Assets Catalog](http://lingyuncxb.com/2019/04/14/HumbleAssetCatalog/)
 
-[iOS-APP包的瘦身之旅（从116M到现在的36M的减肥之路）_移动开发_ZFJ_张福杰-CSDN博客](https://blog.csdn.net/u014220518/article/details/79725478)
+- [iOS-APP包的瘦身之旅（从116M到现在的36M的减肥之路）_移动开发_ZFJ_张福杰-CSDN博客](https://blog.csdn.net/u014220518/article/details/79725478)
 
-[iOS 瘦身之道](https://juejin.im/post/5cdd27d4f265da036902bda5)
+- [iOS 瘦身之道](https://juejin.im/post/5cdd27d4f265da036902bda5)
+
+- [删除 FrameWork 中无用 mach-O 文件](https://www.infoq.cn/article/ios-thinning-delete-unnecessary-mach-o/)
 
 
 
