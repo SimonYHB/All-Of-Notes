@@ -6,6 +6,7 @@
   - [启动优化篇](https://juejin.im/post/5e950106f265da47b725eaff)
   - [卡顿优化篇](https://juejin.im/post/5db158e3518825643d6b34db)
   - [启动优化之二进制重排](https://juejin.im/post/5e92bd826fb9a03c585c003f)
+  - [包体积优化篇](https://juejin.im/post/5ece09b6e51d4578435e3875)
 - iOS优秀第三方源码解析
   - [一、深入理解fishhook源码](https://juejin.im/post/5e62275cf265da570e39ae46)
   - [二、深入理解Aspects源码](https://juejin.im/post/5e703f57e51d4526c3591b1a)

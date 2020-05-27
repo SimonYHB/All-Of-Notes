@@ -42,7 +42,7 @@
 
   除了终端命令，还可以使用 [iSparta](http://isparta.github.io/) 进行批量转换格式。
 
-  ![06](/Users/yehuangbin/Desktop/github/All-Of-Notes/blog/2020/App瘦身/images/06.png)
+  ![06](./images/06.png)
 
 - Xcode 本身也提供压缩图片的编译选项
 
@@ -54,7 +54,7 @@
 
     移除 PNG 资源的文本字符，比如图像名称、作者、版权、创作时间、注释等信息。
 
-  ![01.png](./images/05.png)
+  ![05.png](./images/05.png)
 
 
 
@@ -294,11 +294,7 @@ pmd cpd --files 扫描文件目录 --minimum-tokens 70 --language objectivec --e
 
 - Enable C++ Exceptions 和 Enable Objective-C Exceptions
 
-  默认都为 Yes，用于捕获 C++ 和 OC 的异常，建议在 release 下设置为 Yes，配合在 Other C Flags 添加 -fno-exceptions 和 -fno-rtt  
-
-  ---------------------未完
-
-  去掉异常支持，Enable C++ Exceptions和Enable Objective-C Exceptions设为NO，并且Other C Flags添加-fno-exceptions，可执行文件减少了27M，其中__gcc_except_tab段减少了17.3M，__text减少了9.7M，效果特别明显。可以对某些文件单独支持异常，编译选项加上-fexceptions即可。但有个问题，假如ABC三个文件，AC文件支持了异常，B不支持，如果C抛了异常，在模拟器下A还是能捕获异常不至于Crash，但真机下捕获不了（有知道原因可以在下面留言：）。去掉异常后，Appstore后续几个版本Crash率没有明显上升。个人认为关键路径支持异常处理就好，像启动时NSCoder读取setting配置文件得要支持捕获异常，等等
+  默认都为 Yes，用于捕获 C++ 和 OC 的异常，如果项目中使用了 try catch， 可考虑去掉并在 release 下设置为 No，配合在 Other C Flags 添加 -fno-exceptions 和 -fno-rtt ，会有比较明显的体积减小。
 
   
 
@@ -324,6 +320,10 @@ pmd cpd --files 扫描文件目录 --minimum-tokens 70 --language objectivec --e
 
   Release 下默认为 Yes，会移除符号信息，把所有符号都定义成 private extern。
 
+- Strip Swift Symbols
+
+  默认为 Yes，移除 Swift 相关的符号表，运行时再从 SWIFT 标准库中获取符号，从而减少应用体积。
+
 
 
 ## App Thinning
@@ -332,7 +332,7 @@ WWDC2015 发布会上首次介绍了 App Thinning，并在 iOS9 开始应用。�
 
 在上传 App 时，配置 App Thinning 即可开启。分为三个部分： Slicing、Bitcode、On-Demand Resources。
 
-![02.png](./images/04.png)
+![04.png](./images/04.png)
 
 ### Slicing
 
@@ -421,7 +421,7 @@ mv -f BMKLocationKit ../BMKLocationKit.framework/
 
 由于我们不是 framework 的作者，不熟悉其代码调用逻辑，移除后应多次验证是否会有关联影响，整天流程如图所示，具体操作可查看 [删除 FrameWork 中无用 mach-O 文件](https://www.infoq.cn/article/ios-thinning-delete-unnecessary-mach-o/)。
 
-![10](./images/11.png)
+![11](./images/11.png)
 
 涉及到的终端指令：
 
@@ -446,7 +446,7 @@ lipo -create a架构二进制文件 b架构二进制文件 -output 合并后的�
 
 ### App Extension 用动态库替代静态库
 
-减少了二进制文件的体积，但增加了整个包的大小，还会增加启动时间，需多方面考虑。
+用动态库会减小二进制文件的体积，但会增加启动时间，增加了运行时载入的过程，并且依赖外部环境，需多方面考虑。
 
 ### 慎重引入第三方库
 
@@ -459,11 +459,16 @@ lipo -create a架构二进制文件 b架构二进制文件 -output 合并后的�
 
 ## 总结
 
-在实际项目瘦身过程中，上面列举的方式不一定都适用。例如当项目具有动态化，许多类和方法都不会在代码中直接产生引用，而可能是通过接口方式下发数据来使用，如果没有配置表会容易产生误删。我们应该怀着敬畏之心，宁可多花点时间，避免误操作，毕竟瘦身虽可贵，安全价更高！
+在实际项目瘦身过程中，上面列举的方式不一定都适用。例如当项目具有动态化，许多类和方法都不会在代码中直接产生引用，而可能是通过接口方式下发数据来使用，如果没有配置表会容易产生误删。我们应该怀着敬畏之心，宁可多花点时间，避免误操作，毕竟瘦身虽可贵，安全价更高。
 
 ### 工具汇总
 
-
+- 无用图片检测：[LSUnusedResources](https://github.com/tinymind/LSUnusedResources)
+- 图片压缩：[ImageOptim](https://imageoptim.com/mac)、[pngquant命令](https://pngquant.org)、[tinypng](https://tinypng.com/)、[Webp](https://developers.google.com/speed/webp/) 
+- 重复文件检测：[fdupes](https://github.com/adrianlopezroche/fdupes) 
+- 查看Mach-O内容：[MachOView](https://github.com/gdbinit/MachOView) 
+- 静态检测代码：LinkMap结合Mach-O 或 Appcode静态检测
+- 重复代码检测：[PMD](https://pmd.github.io/) 
 
 ### 参考资料
 
@@ -477,21 +482,6 @@ lipo -create a架构二进制文件 b架构二进制文件 -output 合并后的�
 
 - [删除 FrameWork 中无用 mach-O 文件](https://www.infoq.cn/article/ios-thinning-delete-unnecessary-mach-o/)
 
-
-
-
-
-https://github.com/skyming/iOS-Performance-Optimization
-
-
-
 - [iOS微信安装包瘦身](https://mp.weixin.qq.com/s?__biz=MzAwNDY1ODY2OQ==&mid=207986417&idx=1&sn=77ea7d8e4f8ab7b59111e78c86ccfe66&scene=24&srcid=0921TTAXHGHWKqckEHTvGzoA#rd)
 
-
-
-https://juejin.im/post/5cdd27d4f265da036902bda5#heading-17
-
-https://www.infoq.cn/article/clang-plugin-ios-app-size-reducing/
-
-https://mp.weixin.qq.com/s?__biz=MzAwNDY1ODY2OQ==&mid=207986417&idx=1&sn=77ea7d8e4f8ab7b59111e78c86ccfe66&scene=24&srcid=0921TTAXHGHWKqckEHTvGzoA#rd
 
