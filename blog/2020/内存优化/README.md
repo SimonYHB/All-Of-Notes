@@ -31,7 +31,7 @@
 ## 检测工具
 
 - 如何分析内存占用
-  - 内存测量器
+  - 内存测量器 (memory)
   - Instruments 
     - Allocations
     - Leaks
@@ -49,10 +49,11 @@
   - 不同格式差别很大
     - 如何选择合适的格式？ 使用 UIGraphicsImageRenderer （iOS10之后）替代 UIGraphicsBeginImageContextWithOptions（固定是4字节像素格式SRGB）
   - 缩小图像
-    - 用 ImageIO框架 替代 UIImage（会解压缩整个图像，产生内存峰值） 进行缩小
+    - 将大图片加载到小空间时， UIImage （UIImage.contentsOfFile）需要先解压整个图像再渲染，会产生内存峰值
+    -  ImageIO框架（CGImageSourceCreateWithURL）可以直接指定加载到内存的图像尺寸和信息，用 ImageIO框架 替代 UIImage 可避免图像峰值
   - 后台优化
     - 切入后台时，图像默认还在内存中  
-    - 退到后台或view消失时从内存中移除图片，进入前台或view出现时再加载图片 
+    - 退到后台或view消失时从内存中移除图片，进入前台或view出现时再加载图片 （通过通知) 
 
 ## 优化建议
 
