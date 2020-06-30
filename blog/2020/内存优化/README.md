@@ -1,12 +1,16 @@
 1. 资料收集
-
 2. 确定大纲
-
+   - 内存机制介绍
+   - iOS内存机制
+   - 常见内存问题及优化
+   - iOS内存分析检测
 3. 按模块学习（列出问题点）
-
 4. 按模块输出
-
 5. 深入更多内容
+
+
+
+
 
 
 
@@ -120,7 +124,7 @@ typedef struct memstat_bucket {
 
 
 - https://juejin.im/post/5e8ee75df265da47e7526b67#heading-14
-
+- https://mp.weixin.qq.com/s/YpJa3LeTFz9UFOUcs5Bitg
 - https://wetest.qq.com/lab/view/367.html?from=content_juejin
 - http://blog.devtang.com/2016/07/30/ios-memory-management/
 - https://juejin.im/post/5c0744f6e51d45598b76f481#heading-9
