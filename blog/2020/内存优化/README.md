@@ -1,66 +1,30 @@
-1. 资料收集
-2. 确定大纲
-   - 内存机制介绍
-   - iOS内存机制
-   - 常见内存问题及优化
-   - iOS内存分析检测
-3. 按模块学习（列出问题点）
-4. 按模块输出
-5. 深入更多内容
+## 操作系统内存相关概念
+
+### 物理内存&虚拟内存
+
+### 多级缓存
+
+### CPU寻址
+
+### 内存分页
+
+### 内存交换机制（Swap In/Out & Page In/Out）
 
 
 
+## iOS内存机制
 
+### 内存空间
 
+### 没有内存交换机制
 
+### 内存页分类
 
-## 为什么要减小内存
+ clean memory 和 dirty memory 两种，iOS 中也有 compressed memory
 
-### ARC出现之前
+### MRC&ARC
 
-## 一些概念
-
-- clean page 
-
-- dirty page
-
-- Compressed page
-
-- memory warnings
-
-  不一定是因为自己的应用造成的
-
-- 内存占用限制
-
-## 检测工具
-
-- 如何分析内存占用
-  - 内存测量器 (memory)
-  - Instruments 
-    - Allocations
-    - Leaks
-    - VM Tracker 追踪脏内存和压缩内存
-    - Virture memory trace 了解系统虚拟内存
-    - 导出 Memgraph
-      - vmmap
-      - Leaks
-      - Heap
-      - malloc_history
-
-## 常见内存相关问题
-
-### 
-
-### 图片的内存
-
-- 不同格式差别很大
-  - 如何选择合适的格式？ 使用 UIGraphicsImageRenderer （iOS10之后）替代 UIGraphicsBeginImageContextWithOptions（固定是4字节像素格式SRGB）
-- 缩小图像
-  - 将大图片加载到小空间时， UIImage （UIImage.contentsOfFile）需要先解压整个图像再渲染，会产生内存峰值
-  -  ImageIO框架（CGImageSourceCreateWithURL）可以直接指定加载到内存的图像尺寸和信息，用 ImageIO框架 替代 UIImage 可避免图像峰值
-- 后台优化
-  - 切入后台时，图像默认还在内存中  
-  - 退到后台或view消失时从内存中移除图片，进入前台或view出现时再加载图片 （通过通知) 
+### 内存警告
 
 ### OOM
 
@@ -109,13 +73,51 @@ typedef struct memstat_bucket {
 
 系统定义了多个优先级，每个优先级对应一个 `memstat_bucket_t` 结构体，存放这个优先级下所有进程。其中后台进程和前台进程的优先级分别为 3 和 10，当系统内存紧张时，前台进程之前的优先级全被 kill 后（包括后台进程），仍然不满足高优先级进程的内存需求，才会主动 kill 前台进程。
 
-## 优化建议
 
-- Framework 使用单例，减少加载次数
+
+## iOS常见内存问题及优化
+
+### FOOM
+
+### 图片内存
+
+- 不同格式差别很大
+  - 如何选择合适的格式？ 使用 UIGraphicsImageRenderer （iOS10之后）替代 UIGraphicsBeginImageContextWithOptions（固定是4字节像素格式SRGB）
+- 缩小图像
+  - 将大图片加载到小空间时， UIImage （UIImage.contentsOfFile）需要先解压整个图像再渲染，会产生内存峰值
+  - ImageIO框架（CGImageSourceCreateWithURL）可以直接指定加载到内存的图像尺寸和信息，用 ImageIO框架 替代 UIImage 可避免图像峰值
+- 后台优化
+  - 切入后台时，图像默认还在内存中  
+  - 退到后台或view消失时从内存中移除图片，进入前台或view出现时再加载图片 （通过通知) 
+
+
+
+## iOS内存分析工具
+
+- 如何分析内存占用
+  - 内存测量器 (memory)
+  - Instruments 
+    - Allocations
+    - Leaks
+    - VM Tracker 追踪脏内存和压缩内存
+    - Virture memory trace 了解系统虚拟内存
+    - 导出 Memgraph
+      - vmmap
+      - Leaks
+      - Heap
+      - malloc_history
 
 ## 总结
 
+### 系列文章
+
 ### 参考资料
+
+- [iOS内存二三事](https://juejin.im/post/5e8ee75df265da47e7526b67#heading-15)
+- [iOS Memory 内存详解](https://mp.weixin.qq.com/s/YpJa3LeTFz9UFOUcs5Bitg)
+- [探索iOS内存分配](https://juejin.im/post/5a5e13c45188257327399e19)
+
+
 
 - [WWDC2018 - iOS Memory Deep Dive ](https://developer.apple.com/videos/play/wwdc2018/416/)
 - [OOM探究：XNU 内存状态管理](https://www.jianshu.com/p/4458700a8ba8) （待深入）
@@ -132,3 +134,4 @@ typedef struct memstat_bucket {
 - https://juejin.im/post/5a5e13c45188257327399e19#heading-8
 - https://juejin.im/post/5a5e13c45188257327399e19#heading-8
 - https://www.meiwen.com.cn/subject/jixyeftx.html
+
