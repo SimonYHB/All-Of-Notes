@@ -46,7 +46,11 @@
 
   有了虚拟内存后，进程访问的是分配给它的虚拟内存，而虚拟内存实际可能映射到物理内存以及硬盘的任何区域，这样就方便了系统使用共享库，并且当内存空间不足时，还可以将部分不使用的内存数据交换到硬盘中或者进行压缩。
 
-  
+### 内存分页
+
+为了方便虚拟内存和物理内存的映射及管理，目前大部分计算机的内存都采用了分页管理，将虚拟内存和物理内存分别分割成 大小相同的单位。iOS下每个进程空间先分段，每个段内再分页，所以物理地址由 `段号 + 段内页号 + 页内地址` 组成，目前 64 为系统每页为 16KB。
+
+内存分页的最大意义在于支持了物理内存的离散使用，连续的虚拟内存页实际映射的物理内存页可以是任意存放的，方便了操作系统对物理内存的管理，也能最大化利用物理内存，减少内存空间的浪费。
 
 ### 虚拟寻址
 
@@ -58,11 +62,21 @@ CPU 访问虚拟地址，经过 **MMU（Memory Management Unit）**翻译成物�
 
 另外 MMU 中有一个 **TLB（Translation Lookaside BUFFER）**来缓存翻译过物理地址的虚拟地址，每次访问时会先在 TLB 查找，没有命中则在**页表（Page Table）**中继续查询；如果 TLB 和 页面没有命中，则说明要访问的地址不在内存中，即**缺页（Page Fault）**，此时会从磁盘中查找，如果命中则将其加载到内存里，并写入页表；如果上述都找不到，则内存访问异常。
 
-### 内存分页
+### Page Fault Handler
 
-为了方便虚拟内存和物理内存的映射及管理，目前大部分计算机的内存都采用了分页管理，将虚拟内存和物理内存分别分割成 大小相同的单位。iOS下每个进程空间先分段，每个段内再分页，所以物理地址由 `段号 + 段内页号 + 页内地址` 组成，目前 64 为系统每页为 16KB。
+当产生缺页时，会交由 Page Fault Handler，根据缺页类型做不同处理。
 
-内存分页的最大意义在于支持了物理内存的离散使用，连续的虚拟内存页实际映射的物理内存页可以是任意存放的，方便了操作系统对物理内存的管理，也能最大化利用物理内存，减少内存空间的浪费。
+- Hard Page Fault
+
+  表示物理内存中没有对应的页帧，此时需要 CPU 从磁盘读取到物理内存中，再通过 MMU 建立虚拟地址和物理地址的映射关系。
+
+- Soft Page Fault
+
+  表示物理内存中存在页帧，但可能是其他进程读取到共享库中，当前进程不知道，只需要 MMU 建立映射到共享内存区域。
+
+- Invalid Page Fault
+
+  无效缺页错误，会触发 SIGSEGV 信号导致结束进程，常出现在非法操作导致的访问越界。
 
 ### 内存交换机制（Swap In/Out ）
 
@@ -137,11 +151,11 @@ struct vm_region_submap_info_64 {
 
 ```
 
-### 内存管理机制（MRC & ARC）
 
-iOS 的内存管理遵循 `谁创建，谁释放，谁引用，谁管理` 原则，方式分为 MRC 和 ARC，13年发布 ARC 后，逐渐取代了手动管理的 MRC。除了部分C/C++ 的内存分配和 Core Graphics 等对象，大部分的内存申请、释放等操作都用系统自行完成，开发者只需要避免产生循环引用即可。
 
 ### 内存警告
+
+当系统内存不够用时，会向当前进程发送内存警告，开发者通过接受内存警告，主动进行处理，以防止进程崩溃。
 
 接受内存警告的三种方式：
 
@@ -149,9 +163,19 @@ iOS 的内存管理遵循 `谁创建，谁释放，谁引用，谁管理` 原则
 - **UIViewController**的`didReceiveMemoryWarning`
 - **NSNotificationCenter**的`UIApplicationDidReceiveMemoryWarningNotification`
 
-### OOM
+通常情况下，清理无用内存来减小当前进程的内存占用是正确的做法，但是由于存在 Compressed Memory，使得实际处理起来有些复杂。
 
-全称是 Out Of Memory，是一种系统管理内存的机制，当内存不够时，会自动将低优先级的进行kill，腾出内存供其他高优先级进程使用。xnu 本身代码是开源的，可在苹果官方[下载](https://opensource.apple.com/tarballs/xnu/)，其中内存状态管理相关代码主要在 `/bsd/kern/kern_memorystatus.h/c` 文件中。
+![06](./images/06.png)
+
+如上图所示，当我们接受到内存警告时，准备将 Dictionary 中的部分内容释放掉，但由于之前 Dictionary 长时间未使用，被系统自动压缩了，所以需要先将其解压后再释放内容，此时占用的物理内存反而比清理前更大了，甚至可能在解压时达到内存临界点，产生 OOM，进程被杀死。
+
+### Jetsam 机制和 OOM
+
+MacOS / iOS是一个从 BSD 衍生而来的系统，内核是 XNU，XNU 的微内核是 Mach，其处理内存警告和异常使用的是 Jetsam 机制。系统从内核中开启了最高优先级的线程，来监控整个系统的内存情况。当系统内存不足时，会自动发出内存警告或触发 OOM 杀死低优先级的进程，腾出内存供其他高优先级进程使用。
+
+我们可以通过 [XNU 代码](https://opensource.apple.com/tarballs/xnu/) 看到 Jetsam 的处理机制，其中内存状态管理相关代码主要在 /bsd/kern/kern_memorystatus.h/c 文件中。
+
+OOM 全称是 Out Of Memory，是一种系统管理内存的机制，当内存不够时，会自动将低优先级的进行kill，腾出内存供其他高优先级进程使用。xnu 本身代码是开源的，可在苹果官方[下载](https://opensource.apple.com/tarballs/xnu/)，其中内存状态管理相关代码主要在 `/bsd/kern/kern_memorystatus.h/c` 文件中。
 
 ```c
 #define JETSAM_PRIORITY_REVISION                  2
@@ -194,13 +218,21 @@ typedef struct memstat_bucket {
 } memstat_bucket_t;
 ```
 
-系统定义了多个优先级，每个优先级对应一个 `memstat_bucket_t` 结构体，存放这个优先级下所有进程。其中后台进程和前台进程的优先级分别为 3 和 10，当系统内存紧张时，前台进程之前的优先级全被 kill 后（包括后台进程），仍然不满足高优先级进程的内存需求，才会主动 kill 前台进程。
+系统定义了多个优先级，每个优先级对应一个 `memstat_bucket_t` 结构体，存放这个优先级下所有进程。可以看到后台应用程序优先级`JETSAM_PRIORITY_BACKGROUND`是3，低于前台应用程序优先级`JETSAM_PRIORITY_FOREGROUND`10，所以当系统内存紧张时，前台进程之前的优先级全被 kill 后（包括后台进程），仍然不满足高优先级进程的内存需求，才会主动 kill 前台进程。
+
+这里要说明下，内存警告和 OOM 没有必然相关性。当瞬间申请了大量内存，而 CPU 正在执行其他任务，会导致进程没有收到内存警告就发生了 OOM；当进程收到内存警告时，如果该进程优先级较高，且系统通过杀死低优先级进程已释放了足够内存，就不会在接收到 OOM。
+
+关于 Jetsam 详细处理流程可以参考笔者之前的文章  Jetsam 机制源码分析。
 
 
 
 ## iOS对象内存管理代码解析
 
 MRC下，ARC下
+
+### 内存管理机制（MRC & ARC）
+
+iOS 的内存管理遵循 `谁创建，谁释放，谁引用，谁管理` 原则，方式分为 MRC 和 ARC，13年发布 ARC 后，逐渐取代了手动管理的 MRC。除了部分C/C++ 的内存分配和 Core Graphics 等对象，大部分的内存申请、释放等操作都用系统自行完成，开发者只需要避免产生循环引用即可。
 
 ### alloc
 
@@ -212,12 +244,14 @@ MRC下，ARC下
 
 
 
+
+
 ## iOS常见内存问题及优化
 
 ### FOOM
 
 - 指 App 在前台因消耗内存过大导致被系统杀死，针对这类问题，我们需要记录发生 FOOM 时的调用栈、内存占用等信息，从而具体分析解决内存占用大的问题。
-- 流程是监控 App 生命周期内的内存增减，在收到内存警告时，记录内存信息，获取当前所有对象信息和内存占用值，并在合适的时机上传到服务器。目前比较出名的 OOM 监控框架有 Facebook 的 **[OOMD](https://github.com/facebookincubator/oomd)** 和腾讯的**[ OOMDetector](https://github.com/Tencent/OOMDetector)**。
+- 流程是监控 App 生命周期内的内存增减，在收到内存警告时，记录内存信息，获取当前所有对象信息和内存占用值，并在合适的时机上传到服务器。目前比较出名的 OOM 监控框架有 Facebook 的 **[OOMD](https://github.com/facebookincubator/oomd)** 和 FBAllocationTracker ，国内的有腾讯开源的**[ OOMDetector](https://github.com/Tencent/OOMDetector)**。
 - OOMD 和 OOMDetoctor 区别在于内存监控方便，OOMD 是通过
 
 ### 内存泄漏
@@ -228,15 +262,15 @@ MRC下，ARC下
 
 ### WKWebView 白屏问题
 
-UIWebView 会因为内存使用过大而崩溃，WKWebView 苹果进行了优化，不会 Crash 但会导致白屏，不显示内容。
+- UIWebView 会因为内存使用过大而崩溃，WKWebView 苹果进行了优化，不会 Crash 但会导致白屏，不显示内容。
 
-解决方法是监听到 URL 为 nil  或者接收到 WKNavigationDelegate 的 `webViewWebContentProcessDidTerminate` 时，reload 页面。
+- 解决方法是监听到 URL 为 nil  或者接收到 WKNavigationDelegate 的 `webViewWebContentProcessDidTerminate` 时，reload 页面。
 
 ### 野指针
 
-目前最为常见的野指针是 `objc_msgSend` 和 `unrecognized selector sent to`，只要能记录崩溃时的调用栈，一般都较容易解决。
+- 目前最为常见的野指针是 `objc_msgSend` 和 `unrecognized selector sent to`，只要能记录崩溃时的调用栈，一般都较容易解决。
 
-开发阶段可以通过开启编译里的 `Zombie Objects` 复现问题，原理是 Hook 系统的 dealloc 方法，执行 __dealloc_zombie 将对象进行僵尸化，如果当前对象再次收到消息，则终止程序并打印出调用信息。
+- 开发阶段可以通过开启编译里的 `Zombie Objects` 复现问题，原理是 Hook 系统的 dealloc 方法，执行 __dealloc_zombie 将对象进行僵尸化，如果当前对象再次收到消息，则终止程序并打印出调用信息。
 
 ### 图片内存
 
@@ -264,7 +298,7 @@ UIWebView 会因为内存使用过大而崩溃，WKWebView 苹果进行了优化
 
 - 构建缓存时使用 NSCache 替代 NSMutableDictionary
 
-  NSCache 是线程安全的，当内存不足时会自动释放内存（取数据时需要先判空），并且可以通过 `countLimit` 和 `totalCostLimit` 属性设置上限，另外当收到内存警告时会自动清空数据，这些都是 NSDictionary 不具备的。
+  NSCache 是线程安全的，当内存不足时会自动释放内存（取数据时需要先判空），并且可以通过 `countLimit` 和 `totalCostLimit` 属性设置上限，另外对存在 Compressed Memory 情况下的内存警告也做了优化，这些都是 NSDictionary 不具备的。
 
 
 
