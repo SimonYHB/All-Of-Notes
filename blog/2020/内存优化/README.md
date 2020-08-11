@@ -248,12 +248,6 @@ iOS 的内存管理遵循 `谁创建，谁释放，谁引用，谁管理` 原则
 
 ## iOS常见内存问题及优化
 
-### FOOM
-
-- 指 App 在前台因消耗内存过大导致被系统杀死，针对这类问题，我们需要记录发生 FOOM 时的调用栈、内存占用等信息，从而具体分析解决内存占用大的问题。
-- 流程是监控 App 生命周期内的内存增减，在收到内存警告时，记录内存信息，获取当前所有对象信息和内存占用值，并在合适的时机上传到服务器。目前比较出名的 OOM 监控框架有 Facebook 的 **[OOMD](https://github.com/facebookincubator/oomd)** 和 FBAllocationTracker ，国内的有腾讯开源的**[ OOMDetector](https://github.com/Tencent/OOMDetector)**。
-- OOMD 和 OOMDetoctor 区别在于内存监控方便，OOMD 是通过
-
 ### 内存泄漏
 
 - ARC 模式下，开发者不再需要手动释放内存，所有内存泄漏基本都是由于对象循环引用引起的。可通过申明 `weak` 或 `unowned` 来避免循环使用。
@@ -288,6 +282,24 @@ iOS 的内存管理遵循 `谁创建，谁释放，谁引用，谁管理` 原则
   - 切入后台时，图像默认还在内存中  
   - 退到后台或view消失时从内存中移除图片，进入前台或view出现时再加载图片 （通过通知) 
 
+### OOM 监控
+
+- 指 App 在前台因消耗内存过大导致被系统杀死，针对这类问题，我们需要记录发生 FOOM 时的调用栈、内存占用等信息，从而具体分析解决内存占用大的问题。
+
+- 流程是监控 App 生命周期内的内存增减，在收到内存警告时，记录内存信息，获取当前所有对象信息和内存占用值，并在合适的时机上传到服务器。目前比较出名的 OOM 监控框架有 Facebook 的 **[OOMD](https://github.com/facebookincubator/oomd)** 和 FBAllocationTracker ，国内的有腾讯开源的**[ OOMDetector](https://github.com/Tencent/OOMDetector)**。
+
+  - FBAllocationTracker
+
+    原理是 hook 了 `malloc/free` 等方法，以此在运行时记录所有实例的分配信息，从而发现一些实例的内存异常情况，有点类似于在 app 内运行、性能更好的 Allocation。但是这个库只能监控 Objective-C 对象，所以局限性非常大，同时因为没办法拿到对象的堆栈信息，所以更难定位 OOM 的具体原因。
+
+  - OOMD
+
+    xxx
+
+  - OOMDetector
+
+    通过  `malloc/free` 的更底层接口 `malloc_logger_t` 记录当前存活对象的内存分配信息，同时也根据系统的 `backtrace_symbols` 回溯了堆栈信息。之后再根据伸展树（Splay Tree）等做数据存储分析，具体方式参看这篇文章：[iOS微信内存监控](https://wetest.qq.com/lab/view/367.html)。
+
 ### 其它问题
 
 - namo_free Crash
@@ -302,7 +314,7 @@ iOS 的内存管理遵循 `谁创建，谁释放，谁引用，谁管理` 原则
 
 
 
-## iOS内存分析工具
+## iOS 内存分析工具
 
 - 如何分析内存占用
   - 内存测量器 (memory)
@@ -316,8 +328,19 @@ iOS 的内存管理遵循 `谁创建，谁释放，谁引用，谁管理` 原则
       - Leaks
       - Heap
       - malloc_history
-
 - MLeaksFinder
+
+
+
+- Xcode memory gauge：在 Xcode 的 Debug navigator 中，可以粗略查看内存占用的情况。
+- Instrument - Allocations：可以查看虚拟内存占用、堆信息、对象信息、调用栈信息，VM Regions 信息等。可以利用这个工具分析内存，并针对地进行优化。
+- Instrument - Leaks：用于检测内存泄漏。
+- MLeaksFinder：通过判断 `UIViewController` 被销毁后其子 `view` 是否也都被销毁，可以在不入侵代码的情况下检测内存泄漏。
+- Instrument - VM Tracker：可以查看内存占用信息，查看各类型内存的占用情况，比如 dirty memory 的大小等等，可以辅助分析内存过大、内存泄漏等原因。
+- Instrument - Virtual Memory Trace：有内存分页的具体信息，具体可以参考 WWDC 2016 - Syetem Trace in Depth。
+- Memory Resource Exceptions：从 Xcode 10 开始，内存占用过大时，调试器能捕获到 `EXC_RESOURCE RESOURCE_TYPE_MEMORY` 异常，并断点在触发异常抛出的地方。
+- Xcode Memory Debugger：Xcode 中可以直接查看所有对象间的相互依赖关系，可以非常方便的查找循环引用的问题。同时，还可以将这些信息导出为 memgraph 文件。
+- memgraph + 命令行指令：结合上一步输出的 memgraph 文件，可以通过一些指令来分析内存情况。`vmmap` 可以打印出进程信息，以及 VMRegions 的信息等，结合 `grep` 可以查看指定 VMRegion 的信息。`leaks` 可追踪堆中的对象，从而查看内存泄漏、堆栈信息等。`heap` 会打印出堆中所有信息，方便追踪内存占用较大的对象。`malloc_history` 可以查看 `heap` 指令得到的对象的堆栈信息，从而方便地发现问题。总结：`malloc_history` ===> Creation；`leaks` ===> Reference；`heap` & `vmmap` ===> Size。
 
 ## 总结
 
