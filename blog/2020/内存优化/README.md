@@ -228,11 +228,15 @@ typedef struct memstat_bucket {
 
 ## iOS对象内存管理代码解析
 
-MRC下，ARC下
+### 管理机制（MRC & ARC）
 
-### 内存管理机制（MRC & ARC）
+iOS 的对象内存管理遵循 `谁创建，谁释放，谁引用，谁管理` 原则，方式分为 MRC 和 ARC。MRC模式下，开发者需手动管理对象引用计数，13年发布 ARC 后逐渐取代MRC，除了部分C/C++ 的内存分配和 Core Graphics 等对象，大部分的内存申请、释放等操作都用系统自行完成，开发者只需要避免产生循环引用即可。
 
-iOS 的内存管理遵循 `谁创建，谁释放，谁引用，谁管理` 原则，方式分为 MRC 和 ARC，13年发布 ARC 后，逐渐取代了手动管理的 MRC。除了部分C/C++ 的内存分配和 Core Graphics 等对象，大部分的内存申请、释放等操作都用系统自行完成，开发者只需要避免产生循环引用即可。
+### 引用计数
+
+要理解 iOS 的内存管理机制，我们要先知道什么是引用计数（retainCount）。引用计数是用来管理对象生命周期的一种简单有效的方式，当我们创建一个对象时，它的引用计数为 1，当有新的指针指向这个对象时，引用计数就加 1；当某个指针不再指向这个对象时，引用计数减 1；当对象的引用计数为 0 时，说明这个对象没有指针指向，系统会将对象销毁，回收内存空间。
+
+特别说明下，当对象被销毁时，此时去获取该对象的引用计数值为 1。这是因为当最后的指针不指向该对象时（release 操作），系统知道即将回收对象，对象所在内存区域的数据变得没有意义，就没有必要再将引用计数值减 1，减少一次内存写入操作。
 
 ### alloc
 
@@ -250,7 +254,7 @@ iOS 的内存管理遵循 `谁创建，谁释放，谁引用，谁管理` 原则
 
 ### 内存泄漏
 
-- ARC 模式下，开发者不再需要手动释放内存，所有内存泄漏基本都是由于对象循环引用引起的。可通过申明 `weak` 或 `unowned` 来避免循环使用。
+- ARC 模式下，开发者不再需要手动释放内存，所有内存泄漏基本都是由于对象循环引用引起的。可通过申明弱引用 `weak` 或 `unowned` 来避免循环使用。
 - 区别在于
 - 另外不是所有引用关系都需要使用弱引用申明，毕竟弱引用对性能还是有影响。GCD 中的
 
@@ -349,26 +353,20 @@ iOS 的内存管理遵循 `谁创建，谁释放，谁引用，谁管理` 原则
 ### 参考资料
 
 - [iOS内存二三事](https://juejin.im/post/5e8ee75df265da47e7526b67#heading-15)
-
 - [iOS Memory 内存详解](https://mp.weixin.qq.com/s/YpJa3LeTFz9UFOUcs5Bitg)
-
 - [什么是内存（一）：存储器层次结构](https://www.cnblogs.com/yaoxiaowen/p/7805661.html)
+- [iOS内存管理的那些事儿-原理及实现](https://juejin.im/post/6844903731457163271)
 
 
-
-- [探索iOS内存分配](https://juejin.im/post/5a5e13c45188257327399e19)
 
 
 
 - [WWDC2018 - iOS Memory Deep Dive ](https://developer.apple.com/videos/play/wwdc2018/416/)
-- [OOM探究：XNU 内存状态管理](https://www.jianshu.com/p/4458700a8ba8) （待深入）
-- 
 
-- https://www.chainnews.com/articles/212771739514.htm
+  
 
-- https://juejin.im/post/5e8ee75df265da47e7526b67#heading-14
-- https://wetest.qq.com/lab/view/367.html?from=content_juejin
-- http://blog.devtang.com/2016/07/30/ios-memory-management/
+
+
 - https://juejin.im/post/5c0744f6e51d45598b76f481#heading-9
 - https://juejin.im/post/5e3794a7f265da3e51531c9d#heading-79
 - https://juejin.im/post/5a5e13c45188257327399e19#heading-8
