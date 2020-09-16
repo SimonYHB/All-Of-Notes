@@ -10,6 +10,8 @@
 		18D73E34250E4760005F3FB9 /* 09用两个栈实现队列.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D73E33250E4760005F3FB9 /* 09用两个栈实现队列.swift */; };
 		18D73E36250EDBCC005F3FB9 /* 11旋转数组的最小数字.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D73E35250EDBCC005F3FB9 /* 11旋转数组的最小数字.swift */; };
 		18D73E38250EE3CD005F3FB9 /* 10斐波那契数列.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D73E37250EE3CD005F3FB9 /* 10斐波那契数列.swift */; };
+		18D73E3A2512CB17005F3FB9 /* 12矩阵中的路径.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D73E392512CB17005F3FB9 /* 12矩阵中的路径.swift */; };
+		18D73E3C2512DB0D005F3FB9 /* 13机器人的运动范围.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D73E3B2512DB0D005F3FB9 /* 13机器人的运动范围.swift */; };
 		18FC1FDA250CB56A002D16B0 /* 02Singleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FC1FD9250CB56A002D16B0 /* 02Singleton.swift */; };
 		18FC1FDC250CB716002D16B0 /* 04二维数组中的查找.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FC1FDB250CB716002D16B0 /* 04二维数组中的查找.swift */; };
 		18FC1FDE250E2677002D16B0 /* 05替换空格.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FC1FDD250E2677002D16B0 /* 05替换空格.swift */; };
@@ -37,6 +39,8 @@
 		18D73E33250E4760005F3FB9 /* 09用两个栈实现队列.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "09用两个栈实现队列.swift"; sourceTree = "<group>"; };
 		18D73E35250EDBCC005F3FB9 /* 11旋转数组的最小数字.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "11旋转数组的最小数字.swift"; sourceTree = "<group>"; };
 		18D73E37250EE3CD005F3FB9 /* 10斐波那契数列.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "10斐波那契数列.swift"; sourceTree = "<group>"; };
+		18D73E392512CB17005F3FB9 /* 12矩阵中的路径.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "12矩阵中的路径.swift"; sourceTree = "<group>"; };
+		18D73E3B2512DB0D005F3FB9 /* 13机器人的运动范围.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "13机器人的运动范围.swift"; sourceTree = "<group>"; };
 		18FC1FD9250CB56A002D16B0 /* 02Singleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 02Singleton.swift; sourceTree = "<group>"; };
 		18FC1FDB250CB716002D16B0 /* 04二维数组中的查找.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "04二维数组中的查找.swift"; sourceTree = "<group>"; };
 		18FC1FDD250E2677002D16B0 /* 05替换空格.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "05替换空格.swift"; sourceTree = "<group>"; };
@@ -70,8 +74,10 @@
 				18FC1FDF250E2D81002D16B0 /* 06从尾到头打印链表.swift */,
 				18FC1FE3250E31A6002D16B0 /* 07重建二叉树.swift */,
 				18D73E33250E4760005F3FB9 /* 09用两个栈实现队列.swift */,
-				18D73E35250EDBCC005F3FB9 /* 11旋转数组的最小数字.swift */,
 				18D73E37250EE3CD005F3FB9 /* 10斐波那契数列.swift */,
+				18D73E35250EDBCC005F3FB9 /* 11旋转数组的最小数字.swift */,
+				18D73E392512CB17005F3FB9 /* 12矩阵中的路径.swift */,
+				18D73E3B2512DB0D005F3FB9 /* 13机器人的运动范围.swift */,
 			);
 			path = "剑指Offer";
 			sourceTree = "<group>";
@@ -165,9 +171,11 @@
 				B46061FE24EBF36F008187B5 /* slidingWindow.swift in Sources */,
 				18FC1FE2250E2DCC002D16B0 /* Define.swift in Sources */,
 				18FC1FDA250CB56A002D16B0 /* 02Singleton.swift in Sources */,
+				18D73E3C2512DB0D005F3FB9 /* 13机器人的运动范围.swift in Sources */,
 				18FC1FE4250E31A6002D16B0 /* 07重建二叉树.swift in Sources */,
 				B46061FA24EBC275008187B5 /* binary.swift in Sources */,
 				18FC1FDE250E2677002D16B0 /* 05替换空格.swift in Sources */,
+				18D73E3A2512CB17005F3FB9 /* 12矩阵中的路径.swift in Sources */,
 				18D73E38250EE3CD005F3FB9 /* 10斐波那契数列.swift in Sources */,
 				18FC1FDC250CB716002D16B0 /* 04二维数组中的查找.swift in Sources */,
 				18D73E34250E4760005F3FB9 /* 09用两个栈实现队列.swift in Sources */,
