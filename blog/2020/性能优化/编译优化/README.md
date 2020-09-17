@@ -66,15 +66,19 @@ Xcode3之前前端编译器为 GCC，后面自研 Clang+LLVM 和 Swift+LLVM
 
 ## 参考资料
 
+- [iOS 编译原理与应用](https://juejin.im/post/6844903896230395918)
+
+- [美团 iOS 工程 zsource 命令背后的那些事儿](https://tech.meituan.com/2019/08/08/the-things-behind-the-ios-project-zsource-command.html)
+
+- 
+
 - [iOS底层学习](https://juejin.im/post/6844904040841641998)
 
 - [iOS 编译知识小结](https://juejin.im/post/6850418118590726151)
 
 - [深入剖析 iOS 编译 Clang / LLVM](https://xiaozhuanlan.com/topic/4916328705)
 
-- [浅谈编译过程](https://juejin.im/post/6844904118192963597)
-
-- [iOS 编译原理与应用](https://juejin.im/post/6844903896230395918)
+- 
 
   
 
