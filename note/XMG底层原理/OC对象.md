@@ -107,6 +107,51 @@ meta-class的superclass指向父meta-class，基类的meta-class的superclass指
 
 
 
+### KVO
+
+使用KVO的对象，类会变成NSKVONotifying_Class，是通过Runtime动态创建的子类，set方法的实现会变成Foundation框架的_NSSetXXXValueAndNotify方法，该方法内部流程如下：
+
+willChangeValueForKey->父类set方法->didChangeValueForKey，其中didChangeValueForKey内会调用observeValueForKeyPath告诉监听者值的改变
+
+ 
+
+NSKVONotifying_Class除了重写set方法，还回重写class(返回原类)、dealloc(收尾工作)、_isKVO方法
+
+
+
+### KVC
+
+Set流程：
+
+1. setKey
+2. _setKey
+3. 判断 accessInstanceVariableDirectly，如果是 No 则抛出异常，为 YES 则依次查找`_key、_isKey、key、isKey`变量
+
+
+
+get流程：
+
+1. 方法查找getKey->key->isKey->_key
+2. 判断 accessInstanceVariableDirectly，为 YES 则依次查找`_key、_isKey、key、isKey`
+
+
+
+### Category
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -126,4 +171,22 @@ meta-class的superclass指向父meta-class，基类的meta-class的superclass指
 - 对象的isa指针指向哪
 
 - OC的类信息存放在哪
+
+- KVO的实现
+
+- 手动触发kvo
+
+  手动调用willChangeValueForKey和didChangeValueForKey
+
+- 直接修改成员变量会触发kvo吗？
+
+  不会。因为不会走set方法，除非自己手动触发
+
+- KVC修改属性会触发KVO吗
+
+  会触发，没有setter方法，KVC内部也会自己触发KVO
+
+- KVC的原理
+
+
 
