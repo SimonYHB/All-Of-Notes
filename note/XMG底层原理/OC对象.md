@@ -138,6 +138,14 @@ get流程：
 
 ### Category
 
+编译时会转成_category_t的结构体，分类中的内容会在程序运行过程中(read_image)通过Runtime(attachCategories)合并到类对象或元类对象中
+
+以rw-methods为例，重新分配方法列表数组的内存，将新的方法列表移入（后编译的分类会放在前面被调用），旧的方法列表移动到数组末尾
+
+相关方法：
+
+_objc_init -> map_images -> map_images_nolock -> _read_images -> remethodizeClass -> attachCatagory -> attachLists -> realloc、memmove、memcopy(移动多个元素时，copy会从小地址开始挪动，如果是在同一个内存中操作可能会出现元素互相护盖，而move内部有判断，会保证数据完整的挪动到目标位置)
+
 
 
 
@@ -187,6 +195,18 @@ get流程：
   会触发，没有setter方法，KVC内部也会自己触发KVO
 
 - KVC的原理
+
+- Category的实现原理
+
+- Category和Extension的区别
+
+  extension编译时信息就包含在类中，category编译会生成_category_t 的结构体，包含对象方法、类方法、属性和协议信息等，运行时才通过runtime合并到类中
+
+- Category有load方法吗？什么时候调用？能继承吗
+
+- load、initialize的区别?  category中的调用顺序？有继承时的调用过程
+
+- Category添加成员变量
 
 
 

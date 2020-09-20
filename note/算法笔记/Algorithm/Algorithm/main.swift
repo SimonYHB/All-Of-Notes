@@ -13,3 +13,5 @@ print("Hello, World!")
 
 
 
+var e = cuttingRope(21)
+print(e)
