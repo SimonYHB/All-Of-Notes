@@ -22,6 +22,8 @@
 		B46061F124EBC05C008187B5 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46061F024EBC05C008187B5 /* main.swift */; };
 		B46061FA24EBC275008187B5 /* binary.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46061F924EBC275008187B5 /* binary.swift */; };
 		B46061FE24EBF36F008187B5 /* slidingWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46061FD24EBF36F008187B5 /* slidingWindow.swift */; };
+		B4C5FEC525184412005EE069 /* 15二进制中1的个数.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C5FEC425184412005EE069 /* 15二进制中1的个数.swift */; };
+		B4C5FEC72518543E005EE069 /* 16数值的整数次方.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C5FEC62518543E005EE069 /* 16数值的整数次方.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -53,6 +55,8 @@
 		B46061F024EBC05C008187B5 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		B46061F924EBC275008187B5 /* binary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = binary.swift; sourceTree = "<group>"; };
 		B46061FD24EBF36F008187B5 /* slidingWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = slidingWindow.swift; sourceTree = "<group>"; };
+		B4C5FEC425184412005EE069 /* 15二进制中1的个数.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "15二进制中1的个数.swift"; sourceTree = "<group>"; };
+		B4C5FEC62518543E005EE069 /* 16数值的整数次方.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "16数值的整数次方.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +85,8 @@
 				18D73E392512CB17005F3FB9 /* 12矩阵中的路径.swift */,
 				18D73E3B2512DB0D005F3FB9 /* 13机器人的运动范围.swift */,
 				18D73E3D2516E9C5005F3FB9 /* 14剪绳子.swift */,
+				B4C5FEC425184412005EE069 /* 15二进制中1的个数.swift */,
+				B4C5FEC62518543E005EE069 /* 16数值的整数次方.swift */,
 			);
 			path = "剑指Offer";
 			sourceTree = "<group>";
@@ -170,6 +176,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B4C5FEC72518543E005EE069 /* 16数值的整数次方.swift in Sources */,
 				18FC1FE0250E2D81002D16B0 /* 06从尾到头打印链表.swift in Sources */,
 				B46061FE24EBF36F008187B5 /* slidingWindow.swift in Sources */,
 				18FC1FE2250E2DCC002D16B0 /* Define.swift in Sources */,
@@ -180,6 +187,7 @@
 				B46061FA24EBC275008187B5 /* binary.swift in Sources */,
 				18FC1FDE250E2677002D16B0 /* 05替换空格.swift in Sources */,
 				18D73E3A2512CB17005F3FB9 /* 12矩阵中的路径.swift in Sources */,
+				B4C5FEC525184412005EE069 /* 15二进制中1的个数.swift in Sources */,
 				18D73E38250EE3CD005F3FB9 /* 10斐波那契数列.swift in Sources */,
 				18FC1FDC250CB716002D16B0 /* 04二维数组中的查找.swift in Sources */,
 				18D73E34250E4760005F3FB9 /* 09用两个栈实现队列.swift in Sources */,

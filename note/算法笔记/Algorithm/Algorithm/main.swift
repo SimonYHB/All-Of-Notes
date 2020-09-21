@@ -13,5 +13,5 @@ print("Hello, World!")
 
 
 
-var e = cuttingRope(21)
+var e = myPow(2.0, 10)
 print(e)
