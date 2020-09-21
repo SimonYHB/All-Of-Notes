@@ -51,12 +51,13 @@ func myPow(_ x: Double, _ n: Int) -> Double {
     }
     var res: Double = 1
     while n_value > 0 {
-        // 判断是奇数还是偶数
+        // 判断是奇数还是偶数，奇数就先乘1个到res中
         if (n_value & 1 == 1) {
             res = x_value * res
         }
+        // 将乘数翻倍，相当于右移1位
         x_value = x_value * x_value
-        // 依次右移，最后剩下的一定是1
+        // 依次右移，所有数值的最高位肯定是1，所以最后剩下的一定是1
         n_value >>= 1
     }
     return res

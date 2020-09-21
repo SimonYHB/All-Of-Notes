@@ -140,11 +140,23 @@ get流程：
 
 编译时会转成_category_t的结构体，分类中的内容会在程序运行过程中(read_image)通过Runtime(attachCategories)合并到类对象或元类对象中
 
-以rw-methods为例，重新分配方法列表数组的内存，将新的方法列表移入（后编译的分类会放在前面被调用），旧的方法列表移动到数组末尾
+以rw-methods为例，重新分配方法列表数组的内存，将新的方法列表移入（后编译的分类会放在前面被先调用），旧的方法列表移动到数组末尾
 
 相关方法：
 
-_objc_init -> map_images -> map_images_nolock -> _read_images -> remethodizeClass -> attachCatagory -> attachLists -> realloc、memmove、memcopy(移动多个元素时，copy会从小地址开始挪动，如果是在同一个内存中操作可能会出现元素互相护盖，而move内部有判断，会保证数据完整的挪动到目标位置)
+_objc_init -> map_images -> map_images_nolock -> _read_images -> remethodizeClass -> attachCatagory -> attachLists -> realloc、memmove、memcopy(移动多个元素时，copy会从小地址开始挪动，如果是在同一个内存中操作可能会出现元素互相覆盖，而move内部有判断，会保证数据完整的挪动到目标位置)
+
+load：虽然分类的load方法会合并到类中，但是在程序加载时load images，就会先通过地址直接调用load方法，所有类和分类的load方法都会被调用，且只会调用一次。load的调用顺序是父类->子类->父类分类->子类分类 。不同类之间load加载顺序是按照编译顺序先后调用。如果我们主动调用load方法，才会走消息发送机制，像普通方法一样调用方法列表中的最前面一个
+
+initialize：在类第一次接受到消息时调用，并且是通过消息发送机制调用的，只会调用方法列表最前面一个。先调用父类的，再调自身及子类的。如果子类没有实现Initialize，会调用父类的initialize，导致父类的Initialize会多次调用(a->b 调用b会初始化a,b，如果b没有实现，初始化调用的也是a，导致调用两次初始化a)
+
+
+
+
+
+
+
+
 
 
 
@@ -203,6 +215,8 @@ _objc_init -> map_images -> map_images_nolock -> _read_images -> remethodizeClas
   extension编译时信息就包含在类中，category编译会生成_category_t 的结构体，包含对象方法、类方法、属性和协议信息等，运行时才通过runtime合并到类中
 
 - Category有load方法吗？什么时候调用？能继承吗
+
+  
 
 - load、initialize的区别?  category中的调用顺序？有继承时的调用过程
 
