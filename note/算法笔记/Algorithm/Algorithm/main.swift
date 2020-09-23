@@ -13,5 +13,5 @@ print("Hello, World!")
 
 
 
-var e = myPow(2.0, 10)
+var e = isMatch("", ".*")
 print(e)

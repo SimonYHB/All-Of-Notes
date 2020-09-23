@@ -26,6 +26,7 @@
 		B4C5FEC72518543E005EE069 /* 16数值的整数次方.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C5FEC62518543E005EE069 /* 16数值的整数次方.swift */; };
 		B4C5FEC925198F05005EE069 /* 17打印从1到最大的n位数.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C5FEC825198F05005EE069 /* 17打印从1到最大的n位数.swift */; };
 		B4C5FECB2519971F005EE069 /* 18删除链表的节点.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C5FECA2519971F005EE069 /* 18删除链表的节点.swift */; };
+		B4C5FECD251ADFE8005EE069 /* 19正则表达式匹配.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C5FECC251ADFE8005EE069 /* 19正则表达式匹配.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -61,6 +62,7 @@
 		B4C5FEC62518543E005EE069 /* 16数值的整数次方.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "16数值的整数次方.swift"; sourceTree = "<group>"; };
 		B4C5FEC825198F05005EE069 /* 17打印从1到最大的n位数.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "17打印从1到最大的n位数.swift"; sourceTree = "<group>"; };
 		B4C5FECA2519971F005EE069 /* 18删除链表的节点.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "18删除链表的节点.swift"; sourceTree = "<group>"; };
+		B4C5FECC251ADFE8005EE069 /* 19正则表达式匹配.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "19正则表达式匹配.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +95,7 @@
 				B4C5FEC62518543E005EE069 /* 16数值的整数次方.swift */,
 				B4C5FEC825198F05005EE069 /* 17打印从1到最大的n位数.swift */,
 				B4C5FECA2519971F005EE069 /* 18删除链表的节点.swift */,
+				B4C5FECC251ADFE8005EE069 /* 19正则表达式匹配.swift */,
 			);
 			path = "剑指Offer";
 			sourceTree = "<group>";
@@ -189,6 +192,7 @@
 				18FC1FE2250E2DCC002D16B0 /* Define.swift in Sources */,
 				18FC1FDA250CB56A002D16B0 /* 02Singleton.swift in Sources */,
 				18D73E3C2512DB0D005F3FB9 /* 13机器人的运动范围.swift in Sources */,
+				B4C5FECD251ADFE8005EE069 /* 19正则表达式匹配.swift in Sources */,
 				18D73E3E2516E9C5005F3FB9 /* 14剪绳子.swift in Sources */,
 				18FC1FE4250E31A6002D16B0 /* 07重建二叉树.swift in Sources */,
 				B46061FA24EBC275008187B5 /* binary.swift in Sources */,
