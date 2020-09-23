@@ -13,5 +13,5 @@ print("Hello, World!")
 
 
 
-var e = isMatch("", ".*")
+var e = isNumber(".. ")
 print(e)
