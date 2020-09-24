@@ -201,6 +201,8 @@ struct ___block_impl {
 struct __xxx_block_desk_0 {
 	size_t reserved;
 	size_t Block_size
+	void (*copy)() // 堆block才会有，栈复制到堆上时调用
+	void (*dispose)() // 堆block才会有，block被废弃时调用
 }
 ````
 
@@ -214,11 +216,34 @@ block变量捕获机制：
 
 
 
+```
+当block内部访问了对象类型的auto变量时
+
+栈block不会产生强引用
+
+堆block会引用对象(强或弱,取决于修饰符)，堆block里的
+```
+
+ 
+
  block类型：
 
 - NSGlobalBlock 没有访问auto变量
-- NSStackBlock 访问了auto变量，放在栈上出了作用域会被销毁
-- NSMallocBlock NSStackBlock调用了copy，所以block作为属性值，要用copy修饰
+- NSStackBlock 访问了auto变量（放在栈上出了作用域会被销毁）
+- NSMallocBlock NSStackBlock调用了copy（所以block作为属性值，是用copy修饰）
+
+
+
+ARC 模式下，以下场景Block会自动做copy操作放到堆上
+
+- 作为函数返回值
+- 将block赋值给__strong，被强指针指向
+- block作为Cocoa API中方法名含有usingBlock的参数
+- GCD的API参数
+
+
+
+
 
 
 
