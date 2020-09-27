@@ -186,7 +186,7 @@ Block转成C++代码
 struct __xxx_block_imp_0 {
 	... //变量捕获
 	struct __block_impl impl; //封装block执行代码
-	struct __xxx_block_desk_0* Desc;
+	struct __xxx_block_desc_0* Desc;
 	 __xxx_block_imp_0() // C++构造函数
 }
 
@@ -198,33 +198,67 @@ struct ___block_impl {
 }
 
 
-struct __xxx_block_desk_0 {
+struct __xxx_block_desc_0 {
 	size_t reserved;
 	size_t Block_size
-	void (*copy)() // 堆block才会有，栈复制到堆上时调用
-	void (*dispose)() // 堆block才会有，block被废弃时调用
+	void (*copy)() // 堆block引用对象才会有，栈复制到堆上时调用
+	void (*dispose)() // 堆block引用对象才会有，block被废弃时调用
 }
 ````
 
 block变量捕获机制：
 
-| 变量           | 是否捕获 | 访问方式 |
-| -------------- | -------- | -------- |
-| 局部变量auto   | 是       | 值传递   |
-| 局部变量static | 是       | 指针传递 |
-| 全局变量       | 否       | 直接访问 |
+| 变量           | 是否捕获 | 访问方式               |
+| -------------- | -------- | ---------------------- |
+| 局部变量auto   | 是       | 值传递(对象是指针指向) |
+| 局部变量static | 是       | 指针传递               |
+| 全局变量       | 否       | 直接访问               |
 
 
 
-```
-当block内部访问了对象类型的auto变量时
+当block内部访问了对象类型的局部变量时：
 
-栈block不会产生强引用
+- 栈block不会产生强引用
+- 堆block会引用对象(strong或weak,取决于修饰符)，堆block里的copy函数调用_Block_object_assign函数做引用处理
+- dispose的_Block_object_dispose会对对象release操作
 
-堆block会引用对象(强或弱,取决于修饰符)，堆block里的
-```
+
+
+block内修改变量：
+
+- auto是值拷贝了一份block里，不能直接修改外部的auto变量，只能修改static和全局变量
+- 用`__block` 修饰auto变量才能在block里修改，编译器会将其包装成对象传入block，访问时实际是访问 `变量->forwarding->变量`，其中forwarding是指向封装对象本身
+- forwarding是为了解决block从栈拷贝到堆，在栈时forwarding是指向栈上的自己，拷贝到堆后，栈和堆都有该对象，此时forwarding指向的是堆上的自己
 
  
+
+__block修饰:
+
+- 基本数据类型
+  - 堆block需要对__block包装的对象进行内存管理(copy/dispose)
+  - copy的_Block_object_assign会对包装对象强引用，并且如果变量是在栈上，还会将变量移到堆上
+  - dispose的_Block_object_dispose会对对象release操作
+
+- 对象类型
+
+  - block内部强引用block封装的对象，封装的对象内部有实际对象指针，引用关系取决于修饰符
+  - MRC下，封装对象对实际对象的引用都是弱引用
+
+  
+
+循环引用：
+
+- __weak 对象销毁会自动置为nil (ARC最常用)
+
+- __unsafe_unretained 对象销毁不会自动置为nil，还是指向原对象地址，产生野指针 (MRC不支持weak，只能用这个或者\__block，MRC下才不用强引用对象)
+
+- __block 将对象在block内置为nil,并且要调用block (基本不用，花里胡哨...)
+
+  
+
+
+
+
 
  block类型：
 
@@ -308,7 +342,18 @@ ARC 模式下，以下场景Block会自动做copy操作放到堆上
 - Category添加成员变量
 
 - Block的原理和本质
+
+  封装了函数调用以及调用环境的OC对象
+
 - __block的作用和注意点
+
+  __block会将对象包装成对象，解决在block内部无法修改局部变量问题，block对其进行内存管理等
+
 - block属性为什么要用copy修饰
+
+  copy后才会将block拷贝到堆上，方便进行内存管理
+
 - block修改NSMutableArray，需不需要添加_block
+
+  不需要，array是指针指向，在block内部修改，外部也会跟着修改
 

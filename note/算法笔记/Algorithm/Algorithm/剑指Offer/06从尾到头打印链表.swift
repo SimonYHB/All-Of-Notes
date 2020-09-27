@@ -3,7 +3,7 @@
 //  Algorithm
 //
 //  Created by SimonYHB on 2020/9/13.
-//  Copyright © 2020 叶煌斌. All rights reserved.
+//  Copyright © 2020 SimonYe. All rights reserved.
 //
 /*
  输入一个链表的头节点，从尾到头反过来返回每个节点的值（用数组返回）。

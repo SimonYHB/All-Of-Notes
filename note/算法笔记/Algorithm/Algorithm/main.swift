@@ -3,7 +3,7 @@
 //  Algorithm
 //
 //  Created by HuangBin Ye on 2020/8/18.
-//  Copyright © 2020 叶煌斌. All rights reserved.
+//  Copyright © 2020 SimonYe. All rights reserved.
 //
 
 import Foundation
@@ -13,5 +13,5 @@ print("Hello, World!")
 
 
 
-var e = isNumber(".. ")
+var e = exchange([1,2,3,4])
 print(e)

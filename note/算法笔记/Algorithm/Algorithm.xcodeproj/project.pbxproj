@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1817ADB4252003BF00C40739 /* 21调整数组顺序使奇数位于偶数前面.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1817ADB3252003BF00C40739 /* 21调整数组顺序使奇数位于偶数前面.swift */; };
+		1817ADB82520093A00C40739 /* 22链表中倒数第k个节点.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1817ADB72520093A00C40739 /* 22链表中倒数第k个节点.swift */; };
 		18D73E34250E4760005F3FB9 /* 09用两个栈实现队列.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D73E33250E4760005F3FB9 /* 09用两个栈实现队列.swift */; };
 		18D73E36250EDBCC005F3FB9 /* 11旋转数组的最小数字.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D73E35250EDBCC005F3FB9 /* 11旋转数组的最小数字.swift */; };
 		18D73E38250EE3CD005F3FB9 /* 10斐波那契数列.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D73E37250EE3CD005F3FB9 /* 10斐波那契数列.swift */; };
@@ -43,6 +45,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1817ADB3252003BF00C40739 /* 21调整数组顺序使奇数位于偶数前面.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "21调整数组顺序使奇数位于偶数前面.swift"; sourceTree = "<group>"; };
+		1817ADB72520093A00C40739 /* 22链表中倒数第k个节点.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "22链表中倒数第k个节点.swift"; sourceTree = "<group>"; };
 		18D73E33250E4760005F3FB9 /* 09用两个栈实现队列.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "09用两个栈实现队列.swift"; sourceTree = "<group>"; };
 		18D73E35250EDBCC005F3FB9 /* 11旋转数组的最小数字.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "11旋转数组的最小数字.swift"; sourceTree = "<group>"; };
 		18D73E37250EE3CD005F3FB9 /* 10斐波那契数列.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "10斐波那契数列.swift"; sourceTree = "<group>"; };
@@ -99,6 +103,8 @@
 				B4C5FECA2519971F005EE069 /* 18删除链表的节点.swift */,
 				B4C5FECC251ADFE8005EE069 /* 19正则表达式匹配.swift */,
 				B4C5FECE251B0D86005EE069 /* 20表示数值的字符串.swift */,
+				1817ADB3252003BF00C40739 /* 21调整数组顺序使奇数位于偶数前面.swift */,
+				1817ADB72520093A00C40739 /* 22链表中倒数第k个节点.swift */,
 			);
 			path = "剑指Offer";
 			sourceTree = "<group>";
@@ -158,7 +164,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1010;
 				LastUpgradeCheck = 1010;
-				ORGANIZATIONNAME = "叶煌斌";
+				ORGANIZATIONNAME = SimonYe;
 				TargetAttributes = {
 					B46061EC24EBC05C008187B5 = {
 						CreatedOnToolsVersion = 10.1;
@@ -194,9 +200,11 @@
 				B46061FE24EBF36F008187B5 /* slidingWindow.swift in Sources */,
 				18FC1FE2250E2DCC002D16B0 /* Define.swift in Sources */,
 				18FC1FDA250CB56A002D16B0 /* 02Singleton.swift in Sources */,
+				1817ADB82520093A00C40739 /* 22链表中倒数第k个节点.swift in Sources */,
 				18D73E3C2512DB0D005F3FB9 /* 13机器人的运动范围.swift in Sources */,
 				B4C5FECD251ADFE8005EE069 /* 19正则表达式匹配.swift in Sources */,
 				18D73E3E2516E9C5005F3FB9 /* 14剪绳子.swift in Sources */,
+				1817ADB4252003BF00C40739 /* 21调整数组顺序使奇数位于偶数前面.swift in Sources */,
 				18FC1FE4250E31A6002D16B0 /* 07重建二叉树.swift in Sources */,
 				B46061FA24EBC275008187B5 /* binary.swift in Sources */,
 				18FC1FDE250E2677002D16B0 /* 05替换空格.swift in Sources */,

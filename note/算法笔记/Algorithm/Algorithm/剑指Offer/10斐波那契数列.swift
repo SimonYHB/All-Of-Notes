@@ -3,7 +3,7 @@
 //  Algorithm
 //
 //  Created by SimonYHB on 2020/9/14.
-//  Copyright © 2020 叶煌斌. All rights reserved.
+//  Copyright © 2020 SimonYe. All rights reserved.
 //
 /*
  写一个函数，输入 n ，求斐波那契（Fibonacci）数列的第 n 项。斐波那契数列的定义如下：

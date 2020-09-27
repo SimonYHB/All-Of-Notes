@@ -3,7 +3,7 @@
 //  Algorithm
 //
 //  Created by HuangBin Ye on 2020/9/21.
-//  Copyright © 2020 叶煌斌. All rights reserved.
+//  Copyright © 2020 SimonYe. All rights reserved.
 //
 
 import Foundation
