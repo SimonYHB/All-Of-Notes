@@ -80,4 +80,51 @@ union {
 
 刚开始类方法、属性和协议都是一位数组存在class_ro_t，bits也是指向class_ro_t，加载时会创建class_rw_t，并将class_ro_t的信息赋值到class_rw_t的对应二位数组中，并将bits指向class_rw_t
 
-上述过程在objc-runtime_new.mm的relizeClass中
+上述过程在objc-runtime_new.mm的relizeClass方法中，load_images时调用
+
+
+
+### method_t
+
+```
+// 函数的底层结构
+struct method_t {
+	SEL name; //函数名，类似C语言字符串
+	const char *type; //编码(返回值类型、参数类型)
+	IMP imp; //指向函数的指针
+}
+```
+
+```
+type示例：
+v16@0:8  // 一个无参数无返回值的函数，v代表void，@代表id，:代表SEL，16表示参数总共占多少字节
+i24@0:8i16f20 // 返回值为Int，参数为Int何float类型的函数
+```
+
+### 方法缓存 cache
+
+使用散列表来缓存调用过的方法（包括父类的），避免每次都需要去遍历查找方法
+
+```
+struct cache_t {
+	struct bucket_t *_buckets; //散列表
+	mask_t _mask; //散列表长度-1
+	mask_t _occupied //已经缓存的方法数量
+}
+
+struct bucket_t {
+	cache_key_t _key; //SEL作为key
+	IMP _imp; //函数的内存地址
+}
+```
+
+散列表的查找方式：
+
+通过key&mask再经过某种算法得到的值就是在buckets中的索引
+
+算法是为了处理得到的索引值相同，苹果里是直接进行-1操作判断是否已被占用
+
+cache扩容后，会将原先缓存的数据都清除
+
+
+
