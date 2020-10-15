@@ -103,7 +103,7 @@ i24@0:8i16f20 // 返回值为Int，参数为Int何float类型的函数
 
 ### 方法缓存 cache
 
-使用散列表来缓存调用过的方法（包括父类的），避免每次都需要去遍历查找方法
+使用散列表来缓存调用过的方法（包括父类的），避免每次都需要去遍历查找方法（缓存在当前调用类的cache中）
 
 ```
 struct cache_t {
@@ -128,3 +128,42 @@ cache扩容后，会将原先缓存的数据都清除
 
 
 
+### objc_msgSend
+
+执行流程：
+
+- 消息发送
+
+  给方法调用者发送消息，执行方法查找流程，查缓存（汇编实现）->查自身->查父类缓存和方法列表，方法列表如果排序了，查找用的是二分查找，否则顺序查找
+
+- 动态方法解析
+
+  通过实现`resolveInstanceMethod/resolveClassMethod`动态给调用者添加方法实现`class_addMethod`，动态添加后，当前调用者会在重新查找方法列表
+
+  如果当前方法做过动态方法解析了，下次就不会再进来
+
+  实际开发中不常用
+
+- 消息转发
+
+  进入消息转发阶段，会进入`__forwarding__`函数，通过实现`forwardingTargetForSelector`将当前消息转发给别的对象处理，如果返回nil则直接结束
+
+  如果没有实现`forwardingTargetForSelector`，则会转发成方法签名，通过实现`methodSignatureForSelector和forwardingInvocation`来处理Invocation，如果实现methodSignatureForSelector并且返回空则会调用doesNotRecognizeSelector再抛出unrecognized selector
+
+  实际开发中常用在中间人代理，例如使用Proxy当作target和timer的中间人防止循环引用，实现Proxy的该方法，将定时器的方法调用转回给target处理
+
+    
+
+  
+
+## 面试题
+
+- OC的消息机制
+
+  调用方法都是转成objc_msgSend函数调用...
+
+- runtime的实际应用
+
+- @dynamic和@synthesize
+
+  @dynamic告诉编译器不用为属性生成get和set实现（@synthesize相反，现在系统默认是synthesize），需要在resolveInstanceMethod中去处理调用
