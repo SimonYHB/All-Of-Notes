@@ -30,6 +30,7 @@
 		B4C5FECB2519971F005EE069 /* 18删除链表的节点.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C5FECA2519971F005EE069 /* 18删除链表的节点.swift */; };
 		B4C5FECD251ADFE8005EE069 /* 19正则表达式匹配.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C5FECC251ADFE8005EE069 /* 19正则表达式匹配.swift */; };
 		B4C5FECF251B0D86005EE069 /* 20表示数值的字符串.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C5FECE251B0D86005EE069 /* 20表示数值的字符串.swift */; };
+		B4D8B1F12537E9CB005FC6CE /* 24反转链表.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D8B1F02537E9CB005FC6CE /* 24反转链表.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -69,6 +70,7 @@
 		B4C5FECA2519971F005EE069 /* 18删除链表的节点.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "18删除链表的节点.swift"; sourceTree = "<group>"; };
 		B4C5FECC251ADFE8005EE069 /* 19正则表达式匹配.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "19正则表达式匹配.swift"; sourceTree = "<group>"; };
 		B4C5FECE251B0D86005EE069 /* 20表示数值的字符串.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "20表示数值的字符串.swift"; sourceTree = "<group>"; };
+		B4D8B1F02537E9CB005FC6CE /* 24反转链表.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "24反转链表.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 				B4C5FECE251B0D86005EE069 /* 20表示数值的字符串.swift */,
 				1817ADB3252003BF00C40739 /* 21调整数组顺序使奇数位于偶数前面.swift */,
 				1817ADB72520093A00C40739 /* 22链表中倒数第k个节点.swift */,
+				B4D8B1F02537E9CB005FC6CE /* 24反转链表.swift */,
 			);
 			path = "剑指Offer";
 			sourceTree = "<group>";
@@ -198,6 +201,7 @@
 				B4C5FEC72518543E005EE069 /* 16数值的整数次方.swift in Sources */,
 				18FC1FE0250E2D81002D16B0 /* 06从尾到头打印链表.swift in Sources */,
 				B46061FE24EBF36F008187B5 /* slidingWindow.swift in Sources */,
+				B4D8B1F12537E9CB005FC6CE /* 24反转链表.swift in Sources */,
 				18FC1FE2250E2DCC002D16B0 /* Define.swift in Sources */,
 				18FC1FDA250CB56A002D16B0 /* 02Singleton.swift in Sources */,
 				1817ADB82520093A00C40739 /* 22链表中倒数第k个节点.swift in Sources */,
