@@ -150,7 +150,7 @@ cache扩容后，会将原先缓存的数据都清除
 
   如果没有实现`forwardingTargetForSelector`，则会转发成方法签名，通过实现`methodSignatureForSelector和forwardingInvocation`来处理Invocation，如果实现methodSignatureForSelector并且返回空则会调用doesNotRecognizeSelector再抛出unrecognized selector
 
-  实际开发中常用在中间人代理，例如使用Proxy当作target和timer的中间人防止循环引用，实现Proxy的该方法，将定时器的方法调用转回给target处理
+  实际开发中常用在中间人代理，例如使用NSProxy当作target和timer的中间人防止循环引用，实现Proxy的该方法，将定时器的方法调用转回给target处理；还有数组add一个网络数据，无法保证是什么类型，就可以在这里处理，当类型错误时就不会闪退了
 
     
 
@@ -164,6 +164,38 @@ cache扩容后，会将原先缓存的数据都清除
 
 - runtime的实际应用
 
+  - 利用关联对象给分类添加属性
+  - 字典转模型 / 遍历变量做归结档
+  - 动态替换原来方法实现（用于系统或静态库等不公开的代码）
+  - 利用消息转发机制解决方法找不到的异常
+
+- runtime不好的案例
+
+  不是苹果推荐的做法，容易在版本迭代时产生问题，例如iOS13迭代，placeLabel失效，会导致崩溃等
+
 - @dynamic和@synthesize
 
   @dynamic告诉编译器不用为属性生成get和set实现（@synthesize相反，现在系统默认是synthesize），需要在resolveInstanceMethod中去处理调用
+
+- super调用的本质
+
+  ```
+  // 是汇编实现的，传入两个参数，伪代码如下
+  objc_msgSendSuper2 {
+  	id receiver;
+  	Class current_class //通过这个去找superclass
+  }
+  ```
+
+- 栈平衡
+
+- 代码转换
+
+  - 中间代码 .ll
+
+    clang -emit-llvm -S main.m
+
+  - C++
+
+    xcrun -sdk iphoneos clang -arch arm64 -rewrite-objc ViewController.m -o xx.cpp
+
