@@ -165,8 +165,17 @@ cache扩容后，会将原先缓存的数据都清除
 - runtime的实际应用
 
   - 利用关联对象给分类添加属性
+
   - 字典转模型 / 遍历变量做归结档
-  - 动态替换原来方法实现（用于系统或静态库等不公开的代码）
+
+  - 动态替换原来方法实现<只是交换imp>（用于系统或静态库等不公开的代码）
+
+    例如替换数组/对象存取值方法，防止数据类型错误导致崩溃
+
+    ```
+    method_exchangeImplementations(Method1, Method2)
+    ```
+
   - 利用消息转发机制解决方法找不到的异常
 
 - runtime不好的案例
@@ -176,6 +185,10 @@ cache扩容后，会将原先缓存的数据都清除
 - @dynamic和@synthesize
 
   @dynamic告诉编译器不用为属性生成get和set实现（@synthesize相反，现在系统默认是synthesize），需要在resolveInstanceMethod中去处理调用
+
+- isKindOfClass和isMemberOfClass区别
+
+  kindOf会遍历父类，menber是比较当前类
 
 - super调用的本质
 
