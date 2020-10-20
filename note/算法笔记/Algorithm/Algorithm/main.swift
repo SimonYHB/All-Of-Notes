@@ -10,7 +10,7 @@ import Foundation
 
 print("Hello, World!")
 
-
+var new = spiralOrder([[3],[2]])
 
 
 var e = exchange([1,2,3,4])

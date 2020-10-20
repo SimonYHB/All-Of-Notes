@@ -35,6 +35,7 @@
 		B4D8B1F12537E9CB005FC6CE /* 24反转链表.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D8B1F02537E9CB005FC6CE /* 24反转链表.swift */; };
 		B4D8B22325398034005FC6CE /* 25合并两个排序的链表.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D8B22225398034005FC6CE /* 25合并两个排序的链表.swift */; };
 		B4D8B22525398439005FC6CE /* 26树的子结构.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D8B22425398439005FC6CE /* 26树的子结构.swift */; };
+		B4D8B227253E7986005FC6CE /* 29顺时针打印矩阵.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D8B226253E7986005FC6CE /* 29顺时针打印矩阵.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -79,6 +80,7 @@
 		B4D8B1F02537E9CB005FC6CE /* 24反转链表.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "24反转链表.swift"; sourceTree = "<group>"; };
 		B4D8B22225398034005FC6CE /* 25合并两个排序的链表.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "25合并两个排序的链表.swift"; sourceTree = "<group>"; };
 		B4D8B22425398439005FC6CE /* 26树的子结构.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "26树的子结构.swift"; sourceTree = "<group>"; };
+		B4D8B226253E7986005FC6CE /* 29顺时针打印矩阵.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "29顺时针打印矩阵.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +122,7 @@
 				B4D8B22425398439005FC6CE /* 26树的子结构.swift */,
 				1870B68F253D0A38005288FF /* 27二叉树的镜像.swift */,
 				1870B692253D0D1B005288FF /* 28对称的二叉树.swift */,
+				B4D8B226253E7986005FC6CE /* 29顺时针打印矩阵.swift */,
 			);
 			path = "剑指Offer";
 			sourceTree = "<group>";
@@ -237,6 +240,7 @@
 				B4D8B22325398034005FC6CE /* 25合并两个排序的链表.swift in Sources */,
 				B46061F124EBC05C008187B5 /* main.swift in Sources */,
 				18D73E36250EDBCC005F3FB9 /* 11旋转数组的最小数字.swift in Sources */,
+				B4D8B227253E7986005FC6CE /* 29顺时针打印矩阵.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -59,13 +59,13 @@ runloop的休眠等待是通过mach_msg()切换到内核态实现的，是真正
   - 控制线程生命周期（线程保活）
   - 监控卡顿
   - 性能优化
-  - 解决NSTimer滑动时失效问题（mode的原因，NSTimer默认是加到defaultMode，滑动时runloop会切换到TrackingMode，需要将NSTimer加入到两种模式下）
+  - 解决NSTimer滑动时失效问题（mode的原因：NSTimer默认是加到defaultMode，滑动时runloop会切换到TrackingMode，需要将NSTimer加入到两种模式下）
 
 - 内部实现逻辑
 
 - 如何响应用户操作
 
-  通过source1捕抓用户时间，包装放入到事件队列中，交由source0处理
+  通过source1捕抓用户事件，包装放入到事件队列中，交由source0处理
 
 - runloop和线程的关系
 
@@ -73,7 +73,9 @@ runloop的休眠等待是通过mach_msg()切换到内核态实现的，是真正
 
 - runloop的状态
 
-- runloop的mode
+- runloop的mode作用
+
+  隔离开，专事专做，例如滑动时就只专心处理滑动事件
 
   常见 NSDefaultRunLoopMode和UITrackingRunLoopMode。
 
