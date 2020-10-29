@@ -24,6 +24,7 @@
 		18FC1FE2250E2DCC002D16B0 /* Define.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FC1FE1250E2DCC002D16B0 /* Define.swift */; };
 		18FC1FE4250E31A6002D16B0 /* 07重建二叉树.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FC1FE3250E31A6002D16B0 /* 07重建二叉树.swift */; };
 		B43DDD752549522C008F8BF2 /* 32从上到下打印二叉树.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43DDD742549522C008F8BF2 /* 32从上到下打印二叉树.swift */; };
+		B43DDD77254A476E008F8BF2 /* 33二叉搜索树的后续遍历序列.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43DDD76254A476E008F8BF2 /* 33二叉搜索树的后续遍历序列.swift */; };
 		B46061F124EBC05C008187B5 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46061F024EBC05C008187B5 /* main.swift */; };
 		B46061FA24EBC275008187B5 /* binary.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46061F924EBC275008187B5 /* binary.swift */; };
 		B46061FE24EBF36F008187B5 /* slidingWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46061FD24EBF36F008187B5 /* slidingWindow.swift */; };
@@ -71,6 +72,7 @@
 		18FC1FE1250E2DCC002D16B0 /* Define.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Define.swift; sourceTree = "<group>"; };
 		18FC1FE3250E31A6002D16B0 /* 07重建二叉树.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "07重建二叉树.swift"; sourceTree = "<group>"; };
 		B43DDD742549522C008F8BF2 /* 32从上到下打印二叉树.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "32从上到下打印二叉树.swift"; sourceTree = "<group>"; };
+		B43DDD76254A476E008F8BF2 /* 33二叉搜索树的后续遍历序列.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "33二叉搜索树的后续遍历序列.swift"; sourceTree = "<group>"; };
 		B46061ED24EBC05C008187B5 /* Algorithm */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Algorithm; sourceTree = BUILT_PRODUCTS_DIR; };
 		B46061F024EBC05C008187B5 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		B46061F924EBC275008187B5 /* binary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = binary.swift; sourceTree = "<group>"; };
@@ -132,6 +134,7 @@
 				B4D8B228253FD7A0005FC6CE /* 30包含min函数的栈.swift */,
 				B4D8B22A253FE1A5005FC6CE /* 31栈的压入弹出序列.swift */,
 				B43DDD742549522C008F8BF2 /* 32从上到下打印二叉树.swift */,
+				B43DDD76254A476E008F8BF2 /* 33二叉搜索树的后续遍历序列.swift */,
 			);
 			path = "剑指Offer";
 			sourceTree = "<group>";
@@ -237,6 +240,7 @@
 				B43DDD752549522C008F8BF2 /* 32从上到下打印二叉树.swift in Sources */,
 				1817ADB4252003BF00C40739 /* 21调整数组顺序使奇数位于偶数前面.swift in Sources */,
 				18FC1FE4250E31A6002D16B0 /* 07重建二叉树.swift in Sources */,
+				B43DDD77254A476E008F8BF2 /* 33二叉搜索树的后续遍历序列.swift in Sources */,
 				B46061FA24EBC275008187B5 /* binary.swift in Sources */,
 				B4D8B229253FD7A0005FC6CE /* 30包含min函数的栈.swift in Sources */,
 				18FC1FDE250E2677002D16B0 /* 05替换空格.swift in Sources */,
