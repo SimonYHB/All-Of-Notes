@@ -28,6 +28,7 @@
 		B46061F124EBC05C008187B5 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46061F024EBC05C008187B5 /* main.swift */; };
 		B46061FA24EBC275008187B5 /* binary.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46061F924EBC275008187B5 /* binary.swift */; };
 		B46061FE24EBF36F008187B5 /* slidingWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46061FD24EBF36F008187B5 /* slidingWindow.swift */; };
+		B4B8C564256351D5005A5296 /* 34二叉树中和为某一值的路径.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B8C563256351D5005A5296 /* 34二叉树中和为某一值的路径.swift */; };
 		B4C5FEC525184412005EE069 /* 15二进制中1的个数.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C5FEC425184412005EE069 /* 15二进制中1的个数.swift */; };
 		B4C5FEC72518543E005EE069 /* 16数值的整数次方.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C5FEC62518543E005EE069 /* 16数值的整数次方.swift */; };
 		B4C5FEC925198F05005EE069 /* 17打印从1到最大的n位数.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C5FEC825198F05005EE069 /* 17打印从1到最大的n位数.swift */; };
@@ -77,6 +78,7 @@
 		B46061F024EBC05C008187B5 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		B46061F924EBC275008187B5 /* binary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = binary.swift; sourceTree = "<group>"; };
 		B46061FD24EBF36F008187B5 /* slidingWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = slidingWindow.swift; sourceTree = "<group>"; };
+		B4B8C563256351D5005A5296 /* 34二叉树中和为某一值的路径.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "34二叉树中和为某一值的路径.swift"; sourceTree = "<group>"; };
 		B4C5FEC425184412005EE069 /* 15二进制中1的个数.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "15二进制中1的个数.swift"; sourceTree = "<group>"; };
 		B4C5FEC62518543E005EE069 /* 16数值的整数次方.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "16数值的整数次方.swift"; sourceTree = "<group>"; };
 		B4C5FEC825198F05005EE069 /* 17打印从1到最大的n位数.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "17打印从1到最大的n位数.swift"; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 				B4D8B22A253FE1A5005FC6CE /* 31栈的压入弹出序列.swift */,
 				B43DDD742549522C008F8BF2 /* 32从上到下打印二叉树.swift */,
 				B43DDD76254A476E008F8BF2 /* 33二叉搜索树的后续遍历序列.swift */,
+				B4B8C563256351D5005A5296 /* 34二叉树中和为某一值的路径.swift */,
 			);
 			path = "剑指Offer";
 			sourceTree = "<group>";
@@ -224,6 +227,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B4B8C564256351D5005A5296 /* 34二叉树中和为某一值的路径.swift in Sources */,
 				B4C5FEC925198F05005EE069 /* 17打印从1到最大的n位数.swift in Sources */,
 				B4C5FEC72518543E005EE069 /* 16数值的整数次方.swift in Sources */,
 				18FC1FE0250E2D81002D16B0 /* 06从尾到头打印链表.swift in Sources */,
