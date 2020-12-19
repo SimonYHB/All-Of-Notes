@@ -11,6 +11,7 @@
 		1817ADB82520093A00C40739 /* 22链表中倒数第k个节点.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1817ADB72520093A00C40739 /* 22链表中倒数第k个节点.swift */; };
 		1870B690253D0A38005288FF /* 27二叉树的镜像.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1870B68F253D0A38005288FF /* 27二叉树的镜像.swift */; };
 		1870B693253D0D1B005288FF /* 28对称的二叉树.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1870B692253D0D1B005288FF /* 28对称的二叉树.swift */; };
+		188BAB3125850F5700621B58 /* 38字符串的排列.swift in Sources */ = {isa = PBXBuildFile; fileRef = 188BAB3025850F5700621B58 /* 38字符串的排列.swift */; };
 		18D73E34250E4760005F3FB9 /* 09用两个栈实现队列.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D73E33250E4760005F3FB9 /* 09用两个栈实现队列.swift */; };
 		18D73E36250EDBCC005F3FB9 /* 11旋转数组的最小数字.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D73E35250EDBCC005F3FB9 /* 11旋转数组的最小数字.swift */; };
 		18D73E38250EE3CD005F3FB9 /* 10斐波那契数列.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D73E37250EE3CD005F3FB9 /* 10斐波那契数列.swift */; };
@@ -60,6 +61,7 @@
 		1817ADB72520093A00C40739 /* 22链表中倒数第k个节点.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "22链表中倒数第k个节点.swift"; sourceTree = "<group>"; };
 		1870B68F253D0A38005288FF /* 27二叉树的镜像.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "27二叉树的镜像.swift"; sourceTree = "<group>"; };
 		1870B692253D0D1B005288FF /* 28对称的二叉树.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "28对称的二叉树.swift"; sourceTree = "<group>"; };
+		188BAB3025850F5700621B58 /* 38字符串的排列.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "38字符串的排列.swift"; sourceTree = "<group>"; };
 		18D73E33250E4760005F3FB9 /* 09用两个栈实现队列.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "09用两个栈实现队列.swift"; sourceTree = "<group>"; };
 		18D73E35250EDBCC005F3FB9 /* 11旋转数组的最小数字.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "11旋转数组的最小数字.swift"; sourceTree = "<group>"; };
 		18D73E37250EE3CD005F3FB9 /* 10斐波那契数列.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "10斐波那契数列.swift"; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 				B43DDD742549522C008F8BF2 /* 32从上到下打印二叉树.swift */,
 				B43DDD76254A476E008F8BF2 /* 33二叉搜索树的后续遍历序列.swift */,
 				B4B8C563256351D5005A5296 /* 34二叉树中和为某一值的路径.swift */,
+				188BAB3025850F5700621B58 /* 38字符串的排列.swift */,
 			);
 			path = "剑指Offer";
 			sourceTree = "<group>";
@@ -234,6 +237,7 @@
 				B46061FE24EBF36F008187B5 /* slidingWindow.swift in Sources */,
 				B4D8B1F12537E9CB005FC6CE /* 24反转链表.swift in Sources */,
 				18FC1FE2250E2DCC002D16B0 /* Define.swift in Sources */,
+				188BAB3125850F5700621B58 /* 38字符串的排列.swift in Sources */,
 				18FC1FDA250CB56A002D16B0 /* 02Singleton.swift in Sources */,
 				B4D8B22525398439005FC6CE /* 26树的子结构.swift in Sources */,
 				1817ADB82520093A00C40739 /* 22链表中倒数第k个节点.swift in Sources */,
